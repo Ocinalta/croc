@@ -101,7 +101,7 @@ utl::report "Remove buffers"
 remove_buffers
 
 utl::report "Repair design"
-repair_design -verbose
+repair_design
 
 save_checkpoint ${log_id_str}_${proj_name}.pre_place
 
@@ -115,14 +115,9 @@ utl::report "###################################################################
 utl::report "# Step ${log_id_str}: GLOBAL PLACEMENT"
 utl::report "###############################################################################"
 
-set_thread_count 8
-
-set GPL_ARGS {  -density 0.60 }
-
-set GPL2_ARGS { -density 0.60
+set GPL_ARGS  { -density 0.35
                 -routability_driven
-                -routability_check_overflow 0.30
-                -timing_driven }
+                -routability_check_overflow 0.30 }
 # density:            In every part of the chip, about N% of the area is occupied by standard cells
 # routability_driven: Reduce density target when there are a lot of wires in an area
 # check_overflow:     Higher means routability starts being considered earlier in placement
@@ -134,29 +129,10 @@ set GPL2_ARGS { -density 0.60
 
 # rough placement to get parasitics from steiner-tree estimate so we can run repair_timing
 utl::report "Global Placement (1)"
-global_placement {*}$GPL_ARGS
-report_metrics "${log_id_str}_${proj_name}.gpl1"
-report_image "${log_id_str}_${proj_name}.gpl1" true true
-save_checkpoint ${log_id_str}_${proj_name}.gpl1
-
-utl::report "Estimate parasitics"
+global_placement {*}$GPL_ARGS -overflow 0.3
 estimate_parasitics -placement
-utl::report "Repair design"
-repair_design -verbose
-save_checkpoint ${log_id_str}_${proj_name}.gpl1_fix
-
-# old versions of repair_timing may swap non-equal pins, deactivated for now to avoid problems
-# Likely introduced in:  https://github.com/The-OpenROAD-Project/OpenROAD/pull/3215 (fixed in new versions)
-utl::report "Repair setup"
-repair_timing -setup -skip_pin_swap -verbose
-save_checkpoint ${log_id_str}_${proj_name}.gpl1_repaired
-
-# actual global placement
-utl::report "Global Placement (2)"
-global_placement {*}$GPL2_ARGS
-report_metrics "${log_id_str}_${proj_name}.gpl2"
-report_image "${log_id_str}_${proj_name}.gpl2" true true
-save_checkpoint ${log_id_str}_${proj_name}.gpl2
+repair_design
+global_placement {*}$GPL_ARGS -skip_initial_place 
 
 
 ###############################################################################
@@ -207,32 +183,27 @@ utl::report "Repair clock nets"
 repair_clock_nets
 
 # legalize cts cells
-utl::report "Detailed placement"
-detailed_placement {*}$DPL_ARGS
 utl::report "Estimate parasitics"
 estimate_parasitics -placement
 
 # propagate clocks now that we have a clock-tree
 set_propagated_clock [all_clocks]
 
-report_metrics "${log_id_str}_${proj_name}.cts_unrepaired"
-
 # repair all setup timing
 utl::report "Repair setup"
-repair_timing -setup -skip_pin_swap -verbose
+repair_timing -setup
 
 # place inserted cells
 utl::report "Detailed placement"
 detailed_placement {*}$DPL_ARGS
 utl::report "Check placement"
-check_placement -verbose
+check_placement
 
 utl::report "Estimate parasitics"
 estimate_parasitics -placement
 report_cts -out_file ${report_dir}/${log_id_str}_${proj_name}.cts.rpt
 report_metrics "${log_id_str}_${proj_name}.cts"
 save_checkpoint ${log_id_str}_${proj_name}.cts
-report_image "${log_id_str}_${proj_name}.cts" true false true
 
 
 ###############################################################################
@@ -251,29 +222,23 @@ utl::report "###################################################################
 # to place vias down to M2/M3 -> reserve some space on M2/M3
 # Reduce TM1 to avoid too much routing there (bigger tracks -> bad for routing)
 set_global_routing_layer_adjustment Metal2-Metal3 0.30
-set_global_routing_layer_adjustment TopMetal1 0.20
-set_routing_layers -signal Metal2-TopMetal1 -clock Metal2-TopMetal1
+set_routing_layers -signal Metal2-Metal5 -clock Metal2-Metal5
 
 utl::report "Global route"
-global_route -guide_file ${report_dir}/${log_id_str}_${proj_name}_route.guide \
-    -congestion_report_file ${report_dir}/${log_id_str}_${proj_name}_congestion.rpt \
-    -allow_congestion
+global_route -allow_congestion
 # default params but -allow_congestion
 # it continues even if it didn't find a solution (may be able to fix afterwards)
 
 utl::report "Estimate parasitics"
 estimate_parasitics -global_routing
-report_metrics "${log_id_str}_${proj_name}.grt"
-save_checkpoint ${log_id_str}_${proj_name}.grt
-report_image "${log_id_str}_${proj_name}.grt" true false false true
 
 grt::set_verbose 0
 # Repair design using global route parasitics
 utl::report "Perform buffer insertion..."
-repair_design -verbose
+repair_design
 utl::report "Repair setup and hold violations..."
-repair_timing -skip_pin_swap -setup -verbose -repair_tns 100
-repair_timing -skip_pin_swap -hold -hold_margin 0.1 -verbose -repair_tns 100
+repair_timing -setup -repair_tns 100
+repair_timing -hold -hold_margin 0.1 -repair_tns 100
 
 utl::report "GRT incremental..."
 # Run to get modified net by DPL
@@ -281,16 +246,12 @@ global_route -start_incremental -allow_congestion
 # Running DPL to fix overlapped instances
 detailed_placement
 # Route only the modified net by DPL
-global_route -end_incremental \
-            -congestion_report_file ${report_dir}/${log_id_str}_congestion_repaired_initial.rpt \
-            -guide_file ${report_dir}/${log_id_str}_${proj_name}_route.guide \
-            -allow_congestion \
-            -verbose
+global_route -end_incremental -allow_congestion
 
 estimate_parasitics -global_routing
-report_metrics "${log_id_str}_${proj_name}.grt_repaired"
-save_checkpoint ${log_id_str}_${proj_name}.grt_repaired
-report_image "${log_id_str}_${proj_name}.grt_repaired" true true false true
+report_metrics "${log_id_str}_${proj_name}.grt"
+save_checkpoint ${log_id_str}_${proj_name}.grt
+report_image "${log_id_str}_${proj_name}.grt" true true false true
 
 
 ###############################################################################
@@ -303,24 +264,19 @@ utl::report "# Step ${log_id_str}: DETAILED ROUTE"
 utl::report "###############################################################################"
 
 # Requires LEF cell with class 'CORE ANTENNACELL', otherwise you need to give a cell
-repair_antennas -ratio_margin 30 -iterations 5
+# repair_antennas -ratio_margin 30 -iterations 5
 # check_antennas
 
 utl::report "Detailed route"
-set_thread_count 8
-detailed_route -output_drc ${report_dir}/${log_id_str}_${proj_name}_route_drc.rpt \
-               -bottom_routing_layer Metal2 \
-               -top_routing_layer TopMetal1 \
-               -droute_end_iter 30 \
+set_thread_count 4
+detailed_route -bottom_routing_layer Metal2 \
+               -top_routing_layer    Metal5 \
+               -droute_end_iter 20 \
                -drc_report_iter_step 5 \
-               -save_guide_updates \
                -clean_patches \
                -verbose 1
 
 utl::report "Saving detailed route"
-save_checkpoint ${log_id_str}_${proj_name}.drt
-report_metrics "${log_id_str}_${proj_name}.drt"
-report_image "${log_id_str}_${proj_name}.drt" true false false true
 
 
 ###############################################################################

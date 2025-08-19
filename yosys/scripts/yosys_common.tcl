@@ -38,6 +38,8 @@ foreach var [dict keys $variables] {
     if {[envVarValid $env_var]} {
         puts "using: $var= '$::env($env_var)'"
         set $var $::env($env_var)
+    } else {
+        set $var $fallback
     }
 }
 

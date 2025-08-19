@@ -60,17 +60,17 @@ package croc_pkg;
   localparam bit [31:0]   PeriphAddrRange   = 32'h1000_0000;
 
   localparam bit [31:0]   SramBaseAddr      = 32'h1000_0000;
-  localparam int unsigned NumSramBanks      = 32'd2;
-  localparam int unsigned SramBankNumWords  = 512;
+  localparam int unsigned NumSramBanks      = 32'd1;
+  localparam int unsigned SramBankNumWords  = 1024;
   localparam int unsigned SramBankAddrWidth = cf_math_pkg::idx_width(SramBankNumWords);
   localparam int unsigned SramAddrRange     = NumSramBanks*SramBankNumWords*4;
 
   localparam bit [31:0]   UserBaseAddr      = 32'h2000_0000;
   localparam bit [31:0]   UserAddrRange     = 32'h6000_0000;
 
-  localparam int unsigned NumCrocDomainSubordinates = 2 + NumSramBanks; // Peripherals + Memory + User Domain
+  localparam int unsigned NumCrocDomainSubordinates = 1 + NumSramBanks; // Peripherals + Memory
   
-  localparam int unsigned NumXbarManagers = 4; // Debug module, Core Instr, Core Data, User Domain
+  localparam int unsigned NumXbarManagers = 3; // Debug module, Core Instr, Core Data
   localparam int unsigned NumXbarSbrRules = NumCrocDomainSubordinates; // number of address rules in the decoder
   localparam int unsigned NumXbarSbr      = NumXbarSbrRules + 1; // additional OBI error, used for signal arrays
 
@@ -117,13 +117,7 @@ package croc_pkg;
   localparam bit [31:0] UartAddrOffset    = 32'h0300_2000;
   localparam bit [31:0] UartAddrRange     = 32'h0000_1000;
 
-  localparam bit [31:0] GpioAddrOffset    = 32'h0300_5000;
-  localparam bit [31:0] GpioAddrRange     = 32'h0000_1000;
-
-  localparam bit [31:0] TimerAddrOffset   = 32'h0300_A000;
-  localparam bit [31:0] TimerAddrRange    = 32'h0000_1000;
-
-  localparam int unsigned NumPeriphRules  = 5;
+  localparam int unsigned NumPeriphRules  = 3;
   localparam int unsigned NumPeriphs      = NumPeriphRules + 1; // additional OBI error
 
   // Enum for bus indices
@@ -131,17 +125,13 @@ package croc_pkg;
     PeriphError    = 0,
     PeriphDebug    = 1,
     PeriphSocCtrl  = 2,
-    PeriphUart     = 3,
-    PeriphGpio     = 4,
-    PeriphTimer    = 5
+    PeriphUart     = 3
   } periph_outputs_e;
 
   localparam addr_map_rule_t [NumPeriphRules-1:0] periph_addr_map = '{                                       // 0: OBI Error (default)
     '{ idx: PeriphDebug,    start_addr: DebugAddrOffset,    end_addr: DebugAddrOffset   + DebugAddrRange},   // 1: Debug
     '{ idx: PeriphSocCtrl,  start_addr: SocCtrlAddrOffset,  end_addr: SocCtrlAddrOffset + SocCtrlAddrRange}, // 2: SoC control
-    '{ idx: PeriphUart,     start_addr: UartAddrOffset,     end_addr: UartAddrOffset    + UartAddrRange},    // 3: UART
-    '{ idx: PeriphGpio,     start_addr: GpioAddrOffset,     end_addr: GpioAddrOffset    + GpioAddrRange},    // 4: GPIO
-    '{ idx: PeriphTimer,    start_addr: TimerAddrOffset,    end_addr: TimerAddrOffset   + TimerAddrRange}    // 5: Timer
+    '{ idx: PeriphUart,     start_addr: UartAddrOffset,     end_addr: UartAddrOffset    + UartAddrRange}     // 3: UART
   };
 
   // OBI is configured as 32 bit data, 32 bit address width

@@ -32,20 +32,17 @@ yosys read_slang --top $top_design -F $sv_flist \
 # yosys-slang uniquifies all modules with the naming scheme:
 # <module-name>$<instance-name> -> match for t:<module-name>$$
 yosys setattr -set keep_hierarchy 1 "t:croc_soc$*"
-yosys setattr -set keep_hierarchy 1 "t:croc_domain$*"
-yosys setattr -set keep_hierarchy 1 "t:user_domain$*"
 yosys setattr -set keep_hierarchy 1 "t:core_wrap$*"
 yosys setattr -set keep_hierarchy 1 "t:cve2_register_file_ff$*"
 yosys setattr -set keep_hierarchy 1 "t:cve2_cs_registers$*"
 yosys setattr -set keep_hierarchy 1 "t:dmi_jtag$*"
 yosys setattr -set keep_hierarchy 1 "t:dm_top$*"
-yosys setattr -set keep_hierarchy 1 "t:gpio$*"
-yosys setattr -set keep_hierarchy 1 "t:timer_unit$*"
-yosys setattr -set keep_hierarchy 1 "t:reg_uart_wrap$*"
+yosys setattr -set keep_hierarchy 1 "t:obi_uart$*"
 yosys setattr -set keep_hierarchy 1 "t:soc_ctrl_reg_top$*"
 yosys setattr -set keep_hierarchy 1 "t:tc_clk*$*"
-yosys setattr -set keep_hierarchy 1 "t:tc_sram_impl$*"
-yosys setattr -set keep_hierarchy 1 "t:cdc_*$*"
+yosys setattr -set keep_hierarchy 1 "t:cdc_2phase_src_clearable$*"
+yosys setattr -set keep_hierarchy 1 "t:cdc_2phase_dst_clearable$*"
+yosys setattr -set keep_hierarchy 1 "t:cdc_reset_ctrlr_half$*"
 yosys setattr -set keep_hierarchy 1 "t:sync$*"
 
 
@@ -76,7 +73,7 @@ yosys tee -q -o "${rep_dir}/${top_design}_initial_opt.rpt" stat
 yosys wreduce 
 yosys peepopt
 yosys opt_clean
-yosys opt -full
+yosys opt
 yosys booth
 yosys share
 yosys opt
@@ -86,9 +83,8 @@ yosys write_verilog -norename -noexpr -attr2comment ${tmp_dir}/${top_design}_yos
 yosys memory_map
 yosys opt -fast
 
-yosys opt_dff -sat -nodffe -nosdff
+yosys opt_dff -nodffe -nosdff
 yosys share
-yosys opt -full
 yosys clean -purge
 
 yosys write_verilog -norename ${tmp_dir}/${top_design}_yosys_abstract.v

@@ -5,9 +5,7 @@
 // Authors:
 // - Philippe Sauter <phsauter@iis.ee.ethz.ch>
 
-module croc_domain import croc_pkg::*; #(
-  parameter int unsigned GpioCount = 16
-) (
+module croc_domain import croc_pkg::*; (
   input  logic      clk_i,
   input  logic      rst_ni,
   input  logic      ref_clk_i,
@@ -23,22 +21,6 @@ module croc_domain import croc_pkg::*; #(
   input  logic      uart_rx_i,
   output logic      uart_tx_o,
 
-  input  logic [GpioCount-1:0] gpio_i,        // Input from GPIO pins
-  output logic [GpioCount-1:0] gpio_o,        // Output to GPIO pins
-  output logic [GpioCount-1:0] gpio_out_en_o, // Output enable signal; 0 -> input, 1 -> output
-
-  output logic [GpioCount-1:0] gpio_in_sync_o, // synchronized GPIO inputs
-  
-  /// User OBI interface
-  /// User as subordinate (from core to user module) 
-  /// Address space 0x2000_0000 - 0x8000_0000
-  output sbr_obi_req_t user_sbr_obi_req_o,
-  input  sbr_obi_rsp_t user_sbr_obi_rsp_i,
-
-  /// User as manager (from user module to SRAM/peripherals)
-  input  mgr_obi_req_t user_mgr_obi_req_i,
-  output mgr_obi_rsp_t user_mgr_obi_rsp_o,
-
   input  logic [NumExternalIrqs-1:0] interrupts_i,
   output logic core_busy_o
 );
@@ -53,15 +35,12 @@ module croc_domain import croc_pkg::*; #(
 
   // interrupts (irqs)
   logic uart_irq;
-  logic gpio_irq;
-  logic timer0_irq0;
-  logic timer0_irq1;
   logic [15:0] interrupts;
   always_comb begin
     interrupts    = '0;
-    interrupts[0] = timer0_irq1;
+    interrupts[0] = '0;
     interrupts[1] = uart_irq;
-    interrupts[2] = gpio_irq;
+    interrupts[2] = '0;
     interrupts[3+:NumExternalIrqs] = interrupts_i;
   end
 
@@ -94,6 +73,9 @@ module croc_domain import croc_pkg::*; #(
   // Subordinate buses out of crossbar
   // ----------------------------------
   // Main xbar subordinate buses, must align with addr map indices!
+  sbr_obi_req_t muxed_sbr_obi_req;
+  sbr_obi_rsp_t muxed_sbr_obi_rsp;
+
   sbr_obi_req_t [NumXbarSbr-1:0] all_sbr_obi_req;
   sbr_obi_rsp_t [NumXbarSbr-1:0] all_sbr_obi_rsp;
 
@@ -122,9 +104,6 @@ module croc_domain import croc_pkg::*; #(
     assign all_sbr_obi_rsp[XbarBank0+i] = xbar_mem_bank_obi_rsp[i];
   end
 
-  assign user_sbr_obi_req_o          = all_sbr_obi_req[XbarUser];
-  assign all_sbr_obi_rsp[XbarUser]   = user_sbr_obi_rsp_i;
-
 
   // -----------------
   // Peripheral buses
@@ -148,14 +127,6 @@ module croc_domain import croc_pkg::*; #(
   // UART periph bus
   sbr_obi_req_t uart_obi_req;
   sbr_obi_rsp_t uart_obi_rsp;
-
-  // GPIO periph bus
-  sbr_obi_req_t gpio_obi_req;
-  sbr_obi_rsp_t gpio_obi_rsp;
-
-  // Timer periph bus
-  sbr_obi_req_t timer_obi_req;
-  sbr_obi_rsp_t timer_obi_rsp;
   
   // Fanout to individual peripherals
   assign error_obi_req                     = all_periph_obi_req[PeriphError];
@@ -166,11 +137,6 @@ module croc_domain import croc_pkg::*; #(
   assign all_periph_obi_rsp[PeriphSocCtrl] = soc_ctrl_obi_rsp;
   assign uart_obi_req                      = all_periph_obi_req[PeriphUart];
   assign all_periph_obi_rsp[PeriphUart]    = uart_obi_rsp;
-  assign gpio_obi_req                      = all_periph_obi_req[PeriphGpio];
-  assign all_periph_obi_rsp[PeriphGpio]    = gpio_obi_rsp;
-  assign timer_obi_req                     = all_periph_obi_req[PeriphTimer];
-  assign all_periph_obi_rsp[PeriphTimer]   = timer_obi_rsp;
-
 
   // -----------------
   // Core
@@ -180,12 +146,12 @@ module croc_domain import croc_pkg::*; #(
     .clk_i,
     .rst_ni,
     .ref_clk_i,
-    .test_enable_i    ( testmode_i  ),
+    .test_enable_i    ( testmode_i ),
 
-    .irqs_i           ( interrupts  ),
-    .timer0_irq_i     ( timer0_irq0 ),
+    .irqs_i           ( interrupts ),
+    .timer0_irq_i     ( '0         ),
 
-    .boot_addr_i      ( boot_addr   ),
+    .boot_addr_i      ( boot_addr  ),
 
     .instr_req_o      ( core_instr_obi_req.req     ),
     .instr_gnt_i      ( core_instr_obi_rsp.gnt     ),
@@ -304,7 +270,7 @@ module croc_domain import croc_pkg::*; #(
   // Main Interconnect
   // -----------------
 
-  obi_xbar #(
+  obi_mux #(
     .SbrPortObiCfg      ( MgrObiCfg        ),
     .MgrPortObiCfg      ( SbrObiCfg        ),
     .sbr_port_obi_req_t ( mgr_obi_req_t    ),
@@ -314,25 +280,49 @@ module croc_domain import croc_pkg::*; #(
     .mgr_port_obi_req_t ( sbr_obi_req_t    ),
     .mgr_port_obi_rsp_t ( sbr_obi_rsp_t    ),
     .NumSbrPorts        ( NumXbarManagers  ),
-    .NumMgrPorts        ( NumXbarSbr       ),
     .NumMaxTrans        ( 2                ),
-    .NumAddrRules       ( NumXbarSbrRules  ),
-    .addr_map_rule_t    ( addr_map_rule_t  ),
-    .UseIdForRouting    ( 1'b0             ),
-    .Connectivity       ( '1               )
-  ) i_main_xbar (
+    .UseIdForRouting    ( 1'b0             )
+  ) i_mux (
     .clk_i,
     .rst_ni,
     .testmode_i,
+    .sbr_ports_req_i ( {core_instr_obi_req, core_data_obi_req, dbg_req_obi_req } ),
+    .sbr_ports_rsp_o ( {core_instr_obi_rsp, core_data_obi_rsp, dbg_req_obi_rsp } ),
+    .mgr_port_req_o  ( muxed_sbr_obi_req ),
+    .mgr_port_rsp_i  ( muxed_sbr_obi_rsp )
+  );
 
-    .sbr_ports_req_i  ( {core_instr_obi_req, core_data_obi_req, dbg_req_obi_req, user_mgr_obi_req_i } ), // from managers towards subordinates
-    .sbr_ports_rsp_o  ( {core_instr_obi_rsp, core_data_obi_rsp, dbg_req_obi_rsp, user_mgr_obi_rsp_o } ),
-    .mgr_ports_req_o  ( all_sbr_obi_req ), // connections to subordinates
-    .mgr_ports_rsp_i  ( all_sbr_obi_rsp ),
+  logic [NumXbarSbr-1:0] demux_port_select;
 
-    .addr_map_i       ( croc_addr_map   ),
-    .en_default_idx_i ( 4'b1111          ),
-    .default_idx_i    ( '0              )
+  addr_decode #(
+    .NoIndices ( NumXbarSbr                        ),
+    .NoRules   ( NumXbarSbrRules                   ),
+    .addr_t    ( logic [  SbrObiCfg.AddrWidth-1:0] ),
+    .rule_t    ( addr_map_rule_t                   )
+  ) i_addr_decode (
+    .addr_i          ( muxed_sbr_obi_req.a.addr ),
+    .addr_map_i      ( croc_addr_map            ),
+    .idx_o           ( demux_port_select        ),
+    .dec_valid_o     (),
+    .dec_error_o     (),
+    .en_default_idx_i( 1'b1 ),
+    .default_idx_i   ( '0   )
+  );
+
+  obi_demux #(
+    .ObiCfg      ( SbrObiCfg     ),
+    .obi_req_t   ( sbr_obi_req_t ),
+    .obi_rsp_t   ( sbr_obi_rsp_t ),
+    .NumMgrPorts ( NumXbarSbr    ),
+    .NumMaxTrans ( 2             )
+  ) i_demux (
+    .clk_i,
+    .rst_ni,
+    .sbr_port_select_i ( demux_port_select  ),
+    .sbr_port_req_i    ( muxed_sbr_obi_req  ),
+    .sbr_port_rsp_o    ( muxed_sbr_obi_rsp  ),
+    .mgr_ports_req_o   ( all_sbr_obi_req    ),
+    .mgr_ports_rsp_i   ( all_sbr_obi_rsp    )
   );
 
   // -----------------
@@ -547,52 +537,5 @@ module croc_domain import croc_pkg::*; #(
     .out1_no   ( ),
     .out2_no   ( )
 );
-
-  // GPIO
-  gpio #(
-    .ObiCfg    ( SbrObiCfg     ),
-    .obi_req_t ( sbr_obi_req_t ),
-    .obi_rsp_t ( sbr_obi_rsp_t ),
-    .GpioCount ( GpioCount     )
-  ) i_gpio (
-    .clk_i,
-    .rst_ni,
-    .gpio_i,                     
-    .gpio_o,                   
-    .gpio_out_en_o,          
-    .gpio_in_sync_o,       
-    .interrupt_o    ( gpio_irq     ),
-    .obi_req_i      ( gpio_obi_req ),
-    .obi_rsp_o      ( gpio_obi_rsp )
-  );
-
-  // Timer
-  timer_unit #(
-    .ID_WIDTH   ( SbrObiCfg.IdWidth )
-  ) i_timer (
-    .clk_i,
-    .rst_ni,
-    .ref_clk_i,
-    
-    .req_i      ( timer_obi_req.req     ),
-    .addr_i     ( timer_obi_req.a.addr  ),
-    .wen_i      ( ~timer_obi_req.a.we   ),
-    .wdata_i    ( timer_obi_req.a.wdata ),
-    .be_i       ( timer_obi_req.a.be    ),
-    .id_i       ( timer_obi_req.a.aid   ),
-    .gnt_o      ( timer_obi_rsp.gnt     ),
-    
-    .r_valid_o  ( timer_obi_rsp.rvalid  ),
-    .r_opc_o    ( ),
-    .r_id_o     ( timer_obi_rsp.r.rid   ),
-    .r_rdata_o  ( timer_obi_rsp.r.rdata ),
-    .event_lo_i ('0 ),
-    .event_hi_i ('0 ),
-    .irq_lo_o   ( timer0_irq0           ),
-    .irq_hi_o   ( timer0_irq1           ),
-    .busy_o     (                       )
-  );
-  assign timer_obi_rsp.r.err        = 1'b0;
-  assign timer_obi_rsp.r.r_optional = 1'b0;
 
 endmodule
