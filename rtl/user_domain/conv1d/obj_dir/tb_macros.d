@@ -1,0 +1,6 @@
+tb_macros.o: ../tb/tb_macros.cpp ../tb/tb_macros.hh \
+ /foss/tools/verilator/share/verilator/include/verilated.h \
+ /foss/tools/verilator/share/verilator/include/verilatedos.h \
+ /foss/tools/verilator/share/verilator/include/verilated_config.h \
+ /foss/tools/verilator/share/verilator/include/verilated_types.h \
+ /foss/tools/verilator/share/verilator/include/verilated_funcs.h

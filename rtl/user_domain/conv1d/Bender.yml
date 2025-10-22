@@ -1,0 +1,56 @@
+package:
+  name: conv1d
+  authors:
+    - "Politecnico di Torino - ISA Lab"
+
+export_include_dirs:
+  - hw/vendor/pulp-platform-common-cells/include
+  - hw/vendor/pulp-platform-register-interface/include
+
+sources:
+  # RTL packages
+  - hw/packages/conv1d_obi_pkg.sv
+  - hw/packages/conv1d_reg_pkg.sv
+  - hw/packages/conv1d_sram_pkg.sv
+  - hw/control-reg/rtl/conv1d_control_reg_pkg.sv
+  
+  # Control registers
+  - hw/control-reg/rtl/conv1d_control_reg_top.sv
+  - hw/control-reg/conv1d_control_reg.sv
+  
+  # Top-level modules
+  - hw/conv1d.sv
+  - hw/conv1d_obi.sv
+  - hw/conv1d_obi_to_sram_gnt.sv
+  
+  # Accelerator components
+  - hw/src/accelerator.sv
+  - hw/src/accumulator.sv
+  - hw/src/adder.sv
+  - hw/src/branch.sv
+  - hw/src/datapath.sv
+  - hw/src/downcounter_3bit.sv
+  - hw/src/final_sum.sv
+  - hw/src/fsm_qalc.sv
+  - hw/src/fsm_tot.sv
+  - hw/src/multiplier.sv
+  - hw/src/mux2to1.sv
+  - hw/src/mux4to1.sv
+  - hw/src/mux5to1.sv
+  - hw/src/register.sv
+  - hw/src/upcounter_2bit.sv
+  
+  # Vendored tech cells
+  - hw/vendor/pulp-platform-tech-cells-generic/src/rtl/tc_sram.sv
+  
+  # Vendored primitives
+  - hw/vendor/pulp-platform-register-interface/vendor/lowrisc_opentitan/src/prim_subreg_arb.sv
+  - hw/vendor/pulp-platform-register-interface/vendor/lowrisc_opentitan/src/prim_subreg_ext.sv
+  - hw/vendor/pulp-platform-register-interface/vendor/lowrisc_opentitan/src/prim_subreg_shadow.sv
+  - hw/vendor/pulp-platform-register-interface/vendor/lowrisc_opentitan/src/prim_subreg.sv
+
+  # Target-specific files (simulation)
+  - target: test
+    files:
+      - hw/simulation/conv1d_sram_wrapper.sv
+      - tb/conv1d_tb_wrapper.sv

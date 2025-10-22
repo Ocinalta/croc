@@ -1,0 +1,190 @@
+// Copyright 2024 Politecnico di Torino.
+// Copyright and related rights are licensed under the Solderpad Hardware
+// License, Version 2.0 (the "License"); you may not use this file except in
+// compliance with the License. You may obtain a copy of the License at
+// http://solderpad.org/licenses/SHL-2.0. Unless required by applicable law
+// or agreed to in writing, software, hardware and materials distributed under
+// this License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for the
+// specific language governing permissions and limitations under the License.
+//
+// File: control_reg.hjson
+// Author(s):
+//   Luigi Giuffrida
+// Date: 07/11/2024
+// Description: Control register description for regtool.py
+
+{
+    name: "conv1d_control",
+    clock_primary: "clk_i",
+    reset_primary: "rst_ni",
+    bus_interfaces: [
+        {
+            protocol: "reg_iface",
+            direction: "device",
+        },
+    ],
+    regwidth: "32",
+    registers: [
+        {
+            name: "CONTROL",
+            desc: "Accelerator main control and status register",
+            fields: [
+                {
+                    bits: "0",
+                    name: "START",
+                    desc: '''
+                        When this bit is set to 1 by software, the conv1d accelerator should start. Default: 0.
+                    ''',
+                    swaccess: "rw",
+                    hwaccess: "hro",
+                    resval: "0",
+                },
+                {
+                    bits: "1",
+                    name: "MCU_USING_SRAM",
+                    desc: '''
+                            This bit is set to 1 when the MCU is accessing the SRAM. Default: 0.
+                    ''',
+                    swaccess: "rw",
+                    hwaccess: "hro",
+                    resval: "0",
+                },
+                {
+                    bits: "2",
+                    name: "LOADED_FLAG",
+                    desc: '''
+                            This bit is set to 1 when the new input/weight has been loaded. Default: 0.
+                    ''',
+                    swaccess: "rw",
+                    hwaccess: "hro",
+                    resval: "0",
+                },
+                // TODO: add more fields if needed
+            ],
+            swaccess: "rw",
+            hwaccess: "hro",
+            resval: "0",
+        },
+        {
+            name: "STATUS1",
+            desc: "Accelerator status register",
+            fields: [
+                {
+                    bits: "0",
+                    name: "RUNNING",
+                    desc: '''
+                        This bit is set to 1 when the accelerator is running. Default: 0.
+                    ''',
+                },
+                {
+                    bits: "1",
+                    name: "DONE",
+                    desc: '''
+                        This bit is set to 1 when the accelerator has finished its computation. Default: 0.
+                    ''',
+                },
+                {
+                    bits: "2",
+                    name: "ACCELERATOR_USING_SRAM",
+                    desc: '''
+                        This bit is set to 0 when the accelerator is not accessing the SRAM. 
+                    ''',
+                },
+                {
+                    bits: "3",
+                    name: "RELOAD_FLAG",
+                    desc: '''
+                        This bit is set to 1 when the new input/weight has to be loaded. Default: 0.
+                    ''',
+                },
+                {
+                    bits: "4",
+                    name: "DONE_calculation",
+                    desc: '''
+                        This bit is set to 1 when the accelerator has finished the calculation. Default: 0.
+                    ''',
+                },
+                {
+                    bits: "5",
+                    name: "DONE_filter",
+                    desc: '''
+                        This bit is set to 1 when the accelerator has finished calculation relative to that filter.
+                    ''',
+                },                
+                {
+                    bits: "10:8",
+                    name: "FILTER_NUMBER_SRAM",
+                    desc: '''
+                         The value of these bits represents the number of the filter on which the hardware is working. Its value goes from 0 to 7 (8 filters).
+                    ''',
+                },
+                {
+                    bits: "13:11",
+                    name: "DATA_NUMBER_SRAM",
+                    desc: '''
+                        The value of these bits represents the number of iteration for that specific filter we are perfoming. Its value goes from 0 to 6 (we have 7 total execution to complete calculation over 1 filter).
+                    ''',
+                },
+                {
+                    bits: "15:14",
+                    name: "LEGO_NUMBER_DIN",
+                    desc: '''
+                        The value of these bits represents the "Lego Block" on which we are working. Its value goes from 0 to 4 (we operate over 4 channels at a time and we totally have 16 channels).
+                    ''',
+                },
+                {
+                    bits: "17:16",
+                    name: "LEGO_NUMBER_WEIGHTS",
+                    desc: '''
+                        The value of these bits represents the "Lego Block" on which we are working. Its value goes from 0 to 3 (we operate over 4 channels at a time and we totally have 16 channels).
+                    ''',
+                },
+                {
+                    bits: "22:18",
+                    name: "LEGO_TOWER_DIN",
+                    desc: '''
+                        The value of these bits represents the column of input on which we are working. We totally have 18 columns in the SRAM.
+                    ''',
+                },
+            ],
+            swaccess: "rw",
+            hwaccess: "hrw",
+            resval: "0",
+        },
+
+               {
+            name: "STATUS2",
+            desc: "Accelerator status register",
+            fields: [
+               {
+                    bits: "7:0",
+                    name: "DIN_ADDRESS",
+                    desc: '''
+                        Its value represent the SRAM address of the last INPUT loaded. Default=20.
+                    ''',
+                },
+                {
+                    bits: "15:8",
+                    name: "DOUT_ADDRESS",
+                    desc: '''
+                        Its value represent the SRAM address of the last OUTPUT loaded.
+                    ''',
+                }
+                {
+                    bits: "23:16",
+                    name: "WEIGHT_ADDRESS",
+                    desc: '''
+                        Its value represent the SRAM address of the last weight loaded. Default=0.
+                    ''',
+                }
+            ],
+            swaccess: "rw",
+            hwaccess: "hrw",
+            resval: "0",
+        },
+
+        // TODO: Add more registers if needed
+
+    ],
+}

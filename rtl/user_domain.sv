@@ -50,9 +50,22 @@ module user_domain import user_pkg::*; import croc_pkg::*; #(
   sbr_obi_req_t user_error_obi_req;
   sbr_obi_rsp_t user_error_obi_rsp;
 
+  // NOTE: Added signals for cnt and conv1d
+  sbr_obi_req_t cnt_obi_req;
+  sbr_obi_rsp_t cnt_obi_rsp;
+  sbr_obi_req_t conv1d_obi_req;
+  sbr_obi_rsp_t conv1d_obi_rsp;
+
   // Fanout into more readable signals
   assign user_error_obi_req              = all_user_sbr_obi_req[UserError];
   assign all_user_sbr_obi_rsp[UserError] = user_error_obi_rsp;
+
+  // NOTE: Fanout into more readable signals for cnt and conv1d
+  assign cnt_obi_req               = all_user_sbr_obi_req[Cnt];
+  assign all_user_sbr_obi_rsp[Cnt] = cnt_obi_rsp;
+  assign conv1d_obi_req               = all_user_sbr_obi_req[Conv1d];
+  assign all_user_sbr_obi_rsp[Conv1d] = conv1d_obi_rsp;
+
 
 
   //-----------------------------------------------------------------------------------------------
@@ -113,6 +126,30 @@ module user_domain import user_pkg::*; import croc_pkg::*; #(
     .testmode_i ( testmode_i      ),
     .obi_req_i  ( user_error_obi_req ),
     .obi_rsp_o  ( user_error_obi_rsp )
+  );
+
+  // NOTE: User added cnt
+  cnt_obi #(
+      .W (32)
+  ) u_cnt_obi (
+      .clk_i     (clk_i),
+      .rst_ni    (rst_ni),
+      .obi_req_i (cnt_obi_req),
+      .obi_rsp_o (cnt_obi_rsp),
+      .reg_req_i (gr_heep_peripheral_req_i[0]),
+      .reg_rsp_o (gr_heep_peripheral_rsp_o[0]),
+      .tc_int_o  (interrupts_o[0])
+  );
+
+  // NOTE: User added conv1d
+  conv1d_obi u_conv1d_obi (
+      .clk_i          (clk_i),
+      .rst_ni         (rst_ni),
+      .obi_req_i      (conv1d_obi_req),
+      .obi_rsp_o      (conv1d_obi_rsp),
+      .reg_req_i      (gr_heep_peripheral_req_i[1]),
+      .reg_rsp_o      (gr_heep_peripheral_rsp_o[1]),
+      .done_int_o     (interrupts_o[1])
   );
 
 endmodule

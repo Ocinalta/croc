@@ -1,0 +1,35 @@
+package:
+  name: cnt
+  authors:
+    - "Marco Penno"
+
+export_include_dirs:
+  - hw/vendor/pulp-platform-common-cells/include
+  - hw/vendor/pulp-platform-register-interface/include
+  
+sources:
+  # Include directories
+  - hw/vendor/pulp-platform-common-cells/include
+  - hw/vendor/pulp-platform-register-interface/include
+
+  # RTL packages
+  - hw/packages/cnt_obi_pkg.sv
+  - hw/packages/cnt_reg_pkg.sv
+  - hw/control-reg/rtl/cnt_control_reg_pkg.sv
+  
+  # RTL files
+  - hw/control-reg/rtl/cnt_control_reg_top.sv
+  - hw/control-reg/cnt_control_reg.sv
+  - hw/cnt_obi.sv
+  - hw/cnt.sv
+
+  # Vendored primitives
+  - hw/vendor/pulp-platform-register-interface/vendor/lowrisc_opentitan/src/prim_subreg_arb.sv
+  - hw/vendor/pulp-platform-register-interface/vendor/lowrisc_opentitan/src/prim_subreg_ext.sv
+  - hw/vendor/pulp-platform-register-interface/vendor/lowrisc_opentitan/src/prim_subreg_shadow.sv
+  - hw/vendor/pulp-platform-register-interface/vendor/lowrisc_opentitan/src/prim_subreg.sv
+
+# Target-specific files (testbench)
+  - target: test
+    files:
+      - tb/cnt_tb_wrapper.sv
