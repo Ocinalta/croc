@@ -15,15 +15,15 @@
 // Date: 08/11/2024
 // Description: conv1d accelerator top module
 
-module conv1d (
+module conv1d import croc_pkg::*; (
   /* verilator lint_off UNUSED */  // TODO: Remove this line when the signal is used
   /* verilator lint_off UNDRIVEN */  // TODO: Remove this line when the signal is used
   input logic clk_i,
   input logic rst_ni,
 
   // Interface towards internal memory
-  input  sbr_obi_req_t mem_req_i,    // Luca: vista la gerarchia l'interfaccia con la memoria interna non è in OBI
-  output sbr_obi_rsp_t mem_rsp_o,  // ""
+  input  sbr_obi_req_t mem_req_i,
+  output sbr_obi_rsp_t mem_rsp_o,
 
   // TODO: add here other interface signals (e.g., from the config. registers)
   input  conv1d_control_reg_pkg::conv1d_control_reg2hw_t reg2hw_t,

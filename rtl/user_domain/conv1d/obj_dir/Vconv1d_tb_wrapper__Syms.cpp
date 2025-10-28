@@ -20,7 +20,7 @@ Vconv1d_tb_wrapper__Syms::Vconv1d_tb_wrapper__Syms(VerilatedContext* contextp, c
     , TOP__conv1d_control_reg_pkg{this, Verilated::catName(namep, "conv1d_control_reg_pkg")}
 {
         // Check resources
-        Verilated::stackCheck(40);
+        Verilated::stackCheck(38);
     // Configure time unit / time precision
     _vm_contextp__->timeunit(-12);
     _vm_contextp__->timeprecision(-12);

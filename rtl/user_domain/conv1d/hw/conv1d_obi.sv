@@ -14,7 +14,7 @@
 // Date: 07/11/2024
 // Description: OBI bus wrapper for the conv1d accelerator
 
-module conv1d_obi (
+module conv1d_obi import croc_pkg::*; (
   input logic clk_i,
   input logic rst_ni,
 
@@ -36,6 +36,7 @@ module conv1d_obi (
   import conv1d_reg_pkg::*;
   import conv1d_control_reg_pkg::*;
   import conv1d_sram_pkg::*;
+  import croc_pkg::*;
 
   // INTERNAL SIGNALS
   // ----------------
