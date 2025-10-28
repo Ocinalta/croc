@@ -36,7 +36,6 @@ module conv1d_obi import croc_pkg::*; (
   import conv1d_reg_pkg::*;
   import conv1d_control_reg_pkg::*;
   import conv1d_sram_pkg::*;
-  import croc_pkg::*;
 
   // INTERNAL SIGNALS
   // ----------------

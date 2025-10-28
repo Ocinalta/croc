@@ -1,4 +1,4 @@
-=== Starting Verilator compilation for conv1d at Wed Oct 29 12:42:24 AM CET 2025 ===
+=== Starting Verilator compilation for conv1d at Wed Oct 29 12:56:46 AM CET 2025 ===
 Generating file list with Bender...
 Running Verilator...
 %Warning-PINCONNECTEMPTY: /foss/designs/rtl/user_domain/conv1d/hw/control-reg/rtl/conv1d_control_reg_top.sv:144:6: Cell pin connected by name with empty reference: 'qe'
@@ -183,7 +183,7 @@ g++ -fuse-ld=mold   conv1d_tb.o data.o tb_components.o tb_macros.o verilated.o v
 rm Vconv1d_tb_wrapper__ALL.verilator_deplist.tmp
 make: Leaving directory '/foss/designs/rtl/user_domain/conv1d/obj_dir'
 - V e r i l a t i o n   R e p o r t: Verilator 5.036 2025-04-27 rev v5.036
-- Verilator: Built from 2.990 MB sources in 35 modules, into 1.099 MB in 13 C++ files needing 0.000 MB
-- Verilator: Walltime 1.390 s (elab=0.009, cvt=0.057, bld=0.694); cpu 0.116 s on 1 threads; alloced 33.152 MB
-=== ✅ Compilation SUCCESS at Wed Oct 29 12:42:26 AM CET 2025 ===
+- Verilator: Built from 2.989 MB sources in 35 modules, into 1.099 MB in 13 C++ files needing 0.000 MB
+- Verilator: Walltime 1.086 s (elab=0.005, cvt=0.053, bld=0.392); cpu 0.119 s on 1 threads; alloced 33.148 MB
+=== ✅ Compilation SUCCESS at Wed Oct 29 12:56:47 AM CET 2025 ===
 Executable: obj_dir/Vconv1d_tb_wrapper
