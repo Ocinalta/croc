@@ -21,8 +21,8 @@ module conv1d_obi (
   // OBI interface (counter value)
   /* verilator lint_off UNUSED */  // TODO: Remove this line when the signal is used 
   /* verilator lint_off UNDRIVEN */  // TODO: Remove this line when the signal is driven
-  input  conv1d_obi_pkg::obi_req_t  obi_req_i,
-  output conv1d_obi_pkg::obi_resp_t obi_rsp_o,
+  input  sbr_obi_req_t obi_req_i,
+  output sbr_obi_rsp_t obi_rsp_o,
 
   // Register Interface (configuration registers)
   input  conv1d_reg_pkg::reg_req_t  reg_req_i,

@@ -13,6 +13,8 @@ sources:
   - hw/packages/conv1d_reg_pkg.sv
   - hw/packages/conv1d_sram_pkg.sv
   - hw/control-reg/rtl/conv1d_control_reg_pkg.sv
+  - hw/vendor/pulp-platform-common-cells/src/cf_math_pkg.sv
+  - ../../obi/obi_pkg.sv
   
   # Control registers
   - hw/control-reg/rtl/conv1d_control_reg_top.sv
@@ -21,7 +23,7 @@ sources:
   # Top-level modules
   - hw/conv1d.sv
   - hw/conv1d_obi.sv
-  - hw/conv1d_obi_to_sram_gnt.sv
+  - hw/obi_sram_shim.sv
   
   # Accelerator components
   - hw/src/accelerator.sv

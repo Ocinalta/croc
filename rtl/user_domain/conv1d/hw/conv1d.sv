@@ -22,16 +22,10 @@ module conv1d (
   input logic rst_ni,
 
   // Interface towards internal memory
-  input  conv1d_obi_pkg::obi_req_t  mem_req_i,    // Luca: vista la gerarchia l'interfaccia con la memoria interna non è in OBI
-  output conv1d_obi_pkg::obi_resp_t mem_rsp_o,  // ""
+  input  sbr_obi_req_t mem_req_i,    // Luca: vista la gerarchia l'interfaccia con la memoria interna non è in OBI
+  output sbr_obi_rsp_t mem_rsp_o,  // ""
 
   // TODO: add here other interface signals (e.g., from the config. registers)
-  // MARCO: Segnali credo aggiunti da noi, forse non vanno aggiunti, bisogna capire guardandp conv1d_obi.sv. Bro dove li hai presi che non esistono nei package?
-  //input conv1d_control_reg_pkg::control_reg_t control_reg_i, // GAETANO: serve per impostare i parametri di funzionamento del nostro acceleratore control register
-  //output conv1d_control_reg_pkg::control_reg_t control_reg_o // GAETANO: serve per leggere lo status di funzuionamento del nostro acceleratore status register
-  //  input  conv1d_reg_pkg::reg_req_t  reg_req_i,  // from host system
-  //  output conv1d_reg_pkg::reg_resp_t reg_rsp_o,   // to host system
-
   input  conv1d_control_reg_pkg::conv1d_control_reg2hw_t reg2hw_t,
   output conv1d_control_reg_pkg::conv1d_control_hw2reg_t hw2reg_t
 
@@ -99,21 +93,39 @@ module conv1d (
     end
   end
 
-  // OBI to SRAM bridge
-  conv1d_obi_to_sram_gnt #(
-    .obi_req_t (conv1d_obi_pkg::obi_req_t),
-    .obi_resp_t(conv1d_obi_pkg::obi_resp_t),
-    .sram_req_t(conv1d_sram_pkg::sram_req_t),
-    .sram_rsp_t(conv1d_sram_pkg::sram_rsp_t)
-  ) u_obi_bridge (
-    .clk_i     (clk_i),
-    .rst_ni    (rst_ni),
-    .obi_req_i (mem_req_i),
-    .obi_rsp_o (mem_rsp_o),
-    .sram_req_o(ext_mem_req),
-    .sram_gnt_i(ext_mem_gnt),
-    .sram_rsp_i(mem_rsp)
-  );
+//  // OBI to SRAM bridge
+//  conv1d_obi_to_sram_gnt #(
+//    .obi_req_t (conv1d_obi_pkg::obi_req_t),
+//    .obi_resp_t(conv1d_obi_pkg::obi_resp_t),
+//    .sram_req_t(conv1d_sram_pkg::sram_req_t),
+//    .sram_rsp_t(conv1d_sram_pkg::sram_rsp_t)
+//  ) u_obi_bridge (
+//    .clk_i     (clk_i),
+//    .rst_ni    (rst_ni),
+//    .obi_req_i (mem_req_i),
+//    .obi_rsp_o (mem_rsp_o),
+//    .sram_req_o(ext_mem_req),
+//    .sram_gnt_i(ext_mem_gnt),
+//    .sram_rsp_i(mem_rsp)
+//  );
+
+obi_sram_shim #(
+  .ObiCfg    (SbrObiCfg),
+  .obi_req_t (sbr_obi_req_t),
+  .obi_rsp_t (sbr_obi_rsp_t)
+) u_obi_bridge (
+  .clk_i     (clk_i),
+  .rst_ni    (rst_ni),
+  .obi_req_i (mem_req_i),
+  .obi_rsp_o (mem_rsp_o),
+  .req_o     (ext_mem_req.req),
+  .we_o      (ext_mem_req.we),
+  .addr_o    (ext_mem_req.addr),
+  .wdata_o   (ext_mem_req.wdata),
+  .be_o      (ext_mem_req.be),
+  .gnt_i     (ext_mem_gnt),
+  .rdata_i   (mem_rsp.rdata)
+);
 
   // Internal memory instance
   // NOTE: you may choose to instantiate two internal memories, each half the

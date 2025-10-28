@@ -8,11 +8,13 @@
 /foss/designs/rtl/user_domain/conv1d/hw/packages/conv1d_reg_pkg.sv
 /foss/designs/rtl/user_domain/conv1d/hw/packages/conv1d_sram_pkg.sv
 /foss/designs/rtl/user_domain/conv1d/hw/control-reg/rtl/conv1d_control_reg_pkg.sv
+/foss/designs/rtl/user_domain/conv1d/hw/vendor/pulp-platform-common-cells/src/cf_math_pkg.sv
+/foss/designs/rtl/user_domain/conv1d/../../obi/obi_pkg.sv
 /foss/designs/rtl/user_domain/conv1d/hw/control-reg/rtl/conv1d_control_reg_top.sv
 /foss/designs/rtl/user_domain/conv1d/hw/control-reg/conv1d_control_reg.sv
 /foss/designs/rtl/user_domain/conv1d/hw/conv1d.sv
 /foss/designs/rtl/user_domain/conv1d/hw/conv1d_obi.sv
-/foss/designs/rtl/user_domain/conv1d/hw/conv1d_obi_to_sram_gnt.sv
+/foss/designs/rtl/user_domain/conv1d/hw/obi_sram_shim.sv
 /foss/designs/rtl/user_domain/conv1d/hw/src/accelerator.sv
 /foss/designs/rtl/user_domain/conv1d/hw/src/accumulator.sv
 /foss/designs/rtl/user_domain/conv1d/hw/src/adder.sv

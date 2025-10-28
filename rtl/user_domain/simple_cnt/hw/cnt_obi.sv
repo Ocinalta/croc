@@ -21,8 +21,8 @@ module cnt_obi #(
   input logic rst_ni,
 
   // OBI interface (counter value)
-  input  cnt_obi_pkg::obi_req_t  obi_req_i,
-  output cnt_obi_pkg::obi_resp_t obi_rsp_o,
+  input  sbr_obi_req_t  obi_req_i,
+  output sbr_obi_rsp_t obi_rsp_o,
 
   // Register Interface (configuration registers)
   input  cnt_reg_pkg::reg_req_t  reg_req_i,

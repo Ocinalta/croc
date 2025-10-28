@@ -50,23 +50,37 @@ module user_domain import user_pkg::*; import croc_pkg::*; #(
   sbr_obi_req_t user_error_obi_req;
   sbr_obi_rsp_t user_error_obi_rsp;
 
-  // NOTE: Added signals for cnt and conv1d
-  sbr_obi_req_t cnt_obi_req;
-  sbr_obi_rsp_t cnt_obi_rsp;
-  sbr_obi_req_t conv1d_obi_req;
-  sbr_obi_rsp_t conv1d_obi_rsp;
+  // Cnt Subordinate Bus
+  sbr_obi_req_t user_cnt_obi_req;
+  sbr_obi_rsp_t user_cnt_obi_rsp;
+
+  // Conv1d Subordinate Bus
+  sbr_obi_req_t user_conv1d_obi_req;
+  sbr_obi_rsp_t user_conv1d_obi_rsp;
+
+  // SCR Cnt Subordinate Bus
+  sbr_obi_req_t user_cnt_reg_obi_req;
+  sbr_obi_rsp_t user_cnt_reg_obi_rsp;
+
+  // SCR Conv1d Subordinate Bus
+  sbr_obi_req_t user_conv1d_reg_obi_req;
+  sbr_obi_rsp_t user_conv1d_reg_obi_rsp;
 
   // Fanout into more readable signals
   assign user_error_obi_req              = all_user_sbr_obi_req[UserError];
   assign all_user_sbr_obi_rsp[UserError] = user_error_obi_rsp;
 
-  // NOTE: Fanout into more readable signals for cnt and conv1d
-  assign cnt_obi_req               = all_user_sbr_obi_req[Cnt];
-  assign all_user_sbr_obi_rsp[Cnt] = cnt_obi_rsp;
-  assign conv1d_obi_req               = all_user_sbr_obi_req[Conv1d];
-  assign all_user_sbr_obi_rsp[Conv1d] = conv1d_obi_rsp;
+  assign user_cnt_obi_req              = all_user_sbr_obi_req[UserCnt];
+  assign all_user_sbr_obi_rsp[UserCnt] = user_cnt_obi_rsp;
 
+  assign user_conv1d_obi_req              = all_user_sbr_obi_req[UserConv1d];
+  assign all_user_sbr_obi_rsp[UserConv1d] = user_conv1d_obi_rsp;
 
+  assign user_cnt_reg_obi_req             = all_user_sbr_obi_req[UserCntReg];
+  assign all_user_sbr_obi_rsp[UserCntReg] = user_cnt_reg_obi_rsp;
+
+  assign user_conv1d_reg_obi_req             = all_user_sbr_obi_req[UserConv1dReg];
+  assign all_user_sbr_obi_rsp[UserConv1dReg] = user_conv1d_reg_obi_rsp;
 
   //-----------------------------------------------------------------------------------------------
   // Demultiplex to User Subordinates according to address map
@@ -108,6 +122,75 @@ module user_domain import user_pkg::*; import croc_pkg::*; #(
     .mgr_ports_rsp_i   ( all_user_sbr_obi_rsp )
   );
 
+//-------------------------------------------------------------------------------------------------
+// Register interface
+//-------------------------------------------------------------------------------------------------
+
+// SCR Cnt
+reg_req_t cnt_reg_req;
+reg_rsp_t cnt_reg_rsp;
+
+periph_to_reg #(
+    .AW    ( SbrObiCfg.AddrWidth  ),
+    .DW    ( SbrObiCfg.DataWidth  ),
+    .BW    ( 8                    ),
+    .IW    ( SbrObiCfg.IdWidth    ),
+    .req_t ( reg_req_t            ),
+    .rsp_t ( reg_rsp_t            )
+) i_cnt_translate (
+    .clk_i,
+    .rst_ni,
+
+    .req_i     ( user_cnt_reg_obi_req.req     ),
+    .add_i     ( user_cnt_reg_obi_req.a.addr  ),
+    .wen_i     ( ~user_cnt_reg_obi_req.a.we   ),
+    .wdata_i   ( user_cnt_reg_obi_req.a.wdata ),
+    .be_i      ( user_cnt_reg_obi_req.a.be    ),
+    .id_i      ( user_cnt_reg_obi_req.a.aid   ),
+
+    .gnt_o     ( user_cnt_reg_obi_rsp.gnt     ),
+    .r_rdata_o ( user_cnt_reg_obi_rsp.r.rdata ),
+    .r_opc_o   ( user_cnt_reg_obi_rsp.r.err   ),
+    .r_id_o    ( user_cnt_reg_obi_rsp.r.rid   ),
+    .r_valid_o ( user_cnt_reg_obi_rsp.rvalid  ),
+
+    .reg_req_o ( cnt_reg_req ),
+    .reg_rsp_i ( cnt_reg_rsp )
+  );
+
+
+// SCR Conv1d
+reg_req_t conv1d_reg_req;
+reg_rsp_t conv1d_reg_rsp;
+
+periph_to_reg #(
+    .AW    ( SbrObiCfg.AddrWidth  ),
+    .DW    ( SbrObiCfg.DataWidth  ),
+    .BW    ( 8                    ),
+    .IW    ( SbrObiCfg.IdWidth    ),
+    .req_t ( reg_req_t            ),
+    .rsp_t ( reg_rsp_t            )
+) i_conv1d_translate (
+    .clk_i,
+    .rst_ni,
+
+    .req_i     ( user_conv1d_reg_obi_req.req     ),
+    .add_i     ( user_conv1d_reg_obi_req.a.addr  ),
+    .wen_i     ( ~user_conv1d_reg_obi_req.a.we   ),
+    .wdata_i   ( user_conv1d_reg_obi_req.a.wdata ),
+    .be_i      ( user_conv1d_reg_obi_req.a.be    ),
+    .id_i      ( user_conv1d_reg_obi_req.a.aid   ),
+
+    .gnt_o     ( user_conv1d_reg_obi_rsp.gnt     ),
+    .r_rdata_o ( user_conv1d_reg_obi_rsp.r.rdata ),
+    .r_opc_o   ( user_conv1d_reg_obi_rsp.r.err   ),
+    .r_id_o    ( user_conv1d_reg_obi_rsp.r.rid   ),
+    .r_valid_o ( user_conv1d_reg_obi_rsp.rvalid  ),
+
+    .reg_req_o ( conv1d_reg_req ),
+    .reg_rsp_i ( conv1d_reg_rsp )
+  );  
+
 
 //-------------------------------------------------------------------------------------------------
 // User Subordinates
@@ -128,28 +211,28 @@ module user_domain import user_pkg::*; import croc_pkg::*; #(
     .obi_rsp_o  ( user_error_obi_rsp )
   );
 
-  // NOTE: User added cnt
+  // Cnt Subordinate
   cnt_obi #(
       .W (32)
   ) u_cnt_obi (
-      .clk_i     (clk_i),
-      .rst_ni    (rst_ni),
-      .obi_req_i (cnt_obi_req),
-      .obi_rsp_o (cnt_obi_rsp),
-      .reg_req_i (gr_heep_peripheral_req_i[0]),
-      .reg_rsp_o (gr_heep_peripheral_rsp_o[0]),
-      .tc_int_o  (interrupts_o[0])
+      .clk_i     ( clk_i ),
+      .rst_ni    ( rst_ni ),
+      .obi_req_i ( user_cnt_obi_req ),
+      .obi_rsp_o ( user_cnt_obi_rsp ),
+      .reg_req_i ( cnt_reg_req ),
+      .reg_rsp_o ( cnt_reg_rsp ),
+      .tc_int_o  ( interrupts_o[0] ) // NOTE: Da verificare
   );
 
-  // NOTE: User added conv1d
+  // Conv1d Subordinate
   conv1d_obi u_conv1d_obi (
-      .clk_i          (clk_i),
-      .rst_ni         (rst_ni),
-      .obi_req_i      (conv1d_obi_req),
-      .obi_rsp_o      (conv1d_obi_rsp),
-      .reg_req_i      (gr_heep_peripheral_req_i[1]),
-      .reg_rsp_o      (gr_heep_peripheral_rsp_o[1]),
-      .done_int_o     (interrupts_o[1])
+      .clk_i          ( clk_i ),
+      .rst_ni         ( rst_ni ),
+      .obi_req_i      ( user_conv1d_obi_req ),
+      .obi_rsp_o      ( user_conv1d_obi_rsp ),
+      .reg_req_i      ( conv1d_reg_req ),
+      .reg_rsp_o      ( conv1d_reg_rsp ),
+      .done_int_o     ( interrupts_o[1] ) // NOTE: Da verificare
   );
 
 endmodule
