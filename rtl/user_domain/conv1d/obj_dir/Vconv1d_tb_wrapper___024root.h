@@ -182,12 +182,12 @@ class alignas(VL_CACHE_LINE_BYTES) Vconv1d_tb_wrapper___024root final : public V
         IData/*31:0*/ conv1d_tb_wrapper__DOT__u_conv1d_obi__DOT__u_conv1d__DOT__u_internal_mem__DOT__u_tc_sram__DOT__unnamedblk6__DOT__unnamedblk7__DOT__j;
         IData/*31:0*/ conv1d_tb_wrapper__DOT__u_conv1d_obi__DOT__u_conv1d_control_reg__DOT__u_conv1d_control_reg_top__DOT__reg_rdata_next;
         IData/*31:0*/ __VactIterCount;
-        QData/*38:0*/ conv1d_tb_wrapper__DOT____Vcellout__u_conv1d_obi__obi_rsp_o;
+        VlWide<3>/*73:0*/ conv1d_tb_wrapper__DOT__obi_req;
+        QData/*38:0*/ conv1d_tb_wrapper__DOT__obi_rsp;
         QData/*47:0*/ conv1d_tb_wrapper__DOT__u_conv1d_obi__DOT__reg2hw;
         QData/*58:0*/ conv1d_tb_wrapper__DOT__u_conv1d_obi__DOT__hw2reg;
         VlWide<3>/*69:0*/ conv1d_tb_wrapper__DOT__u_conv1d_obi__DOT__u_conv1d__DOT__int_mem_req;
         VlWide<3>/*69:0*/ conv1d_tb_wrapper__DOT__u_conv1d_obi__DOT__u_conv1d__DOT__mem_req;
-        QData/*63:0*/ __VdfgRegularize_hd87f99a1_1_0;
         VlUnpacked<CData/*0:0*/, 4> __Vm_traceActivity;
     };
     VlTriggerVec<1> __VstlTriggered;
