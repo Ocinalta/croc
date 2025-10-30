@@ -6,6 +6,8 @@ package:
 export_include_dirs:
   - hw/vendor/pulp-platform-common-cells/include
   - hw/vendor/pulp-platform-register-interface/include
+  - ../../obi/include
+  - ../../register_interface/include
   
 sources:
   # Include directories
@@ -16,6 +18,9 @@ sources:
   - hw/packages/cnt_obi_pkg.sv
   - hw/packages/cnt_reg_pkg.sv
   - hw/control-reg/rtl/cnt_control_reg_pkg.sv
+  - hw/vendor/pulp-platform-common-cells/src/cf_math_pkg.sv
+  - ../../obi/obi_pkg.sv
+  - ../../croc_pkg.sv
   
   # RTL files
   - hw/control-reg/rtl/cnt_control_reg_top.sv

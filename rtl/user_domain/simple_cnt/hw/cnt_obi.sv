@@ -14,7 +14,7 @@
 // Date: 07/11/2024
 // Description: OBI bus wrapper for the simple counter
 
-module cnt_obi #(
+module cnt_obi import croc_pkg::*; #(
   parameter int unsigned W = 32  // counter bitwidth (max: 32)
 ) (
   input logic clk_i,
@@ -74,8 +74,8 @@ module cnt_obi #(
   // OBI bridge to counter value
   // ---------------------------
   // Bus write request logic
-  assign cnt_ld     = obi_req_i.req & obi_req_i.we & (&obi_req_i.be) & ~(|(obi_req_i.addr & OBI_ADDR_MASK));
-  assign cnt_ld_val = obi_req_i.wdata[W-1:0];
+  assign cnt_ld     = obi_req_i.req & obi_req_i.a.we & (&obi_req_i.a.be) & ~(|(obi_req_i.a.addr & OBI_ADDR_MASK));
+  assign cnt_ld_val = obi_req_i.a.wdata[W-1:0];
 
   // Bus response logic
   assign obi_gnt = obi_req_i.req & ~cnt_clr;  // accept a load request if not being cleared
@@ -90,7 +90,16 @@ module cnt_obi #(
   end
 
   // Bus signals
-  assign obi_rsp_o = '{gnt: obi_gnt, rvalid: obi_rvalid_q, rdata: {{32 - W{1'b0}}, obi_rdata_q}};
+  assign obi_rsp_o = '{
+  gnt:    obi_gnt,
+  rvalid: obi_rvalid_q,
+  r:      '{
+              default:    '0,
+              rdata:      {{32 - W{1'b0}}, obi_rdata_q}
+           }
+  };
+
+
 
   // -----------------
   // CONTROL REGISTERS

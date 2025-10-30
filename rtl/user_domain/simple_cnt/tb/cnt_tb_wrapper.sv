@@ -14,7 +14,7 @@
 // Date: 10/11/2024
 // Description: Wrapper for Verilator TB
 
-module cnt_tb_wrapper #(
+module cnt_tb_wrapper import croc_pkg::*; #(
   parameter int unsigned W = 32  // counter bitwidth (max: 32)
 ) (
   input logic clk_i,
@@ -44,8 +44,8 @@ module cnt_tb_wrapper #(
   output logic tc_int_o  // interrupt to host system
 );
   // INTERNAL SIGNALS
-  cnt_obi_pkg::obi_req_t          obi_req;  // from host system
-  cnt_obi_pkg::obi_resp_t         obi_rsp;  // to host system
+  sbr_obi_req_t         obi_req;  // from host system
+  sbr_obi_rsp_t         obi_rsp;  // to host system
   cnt_reg_pkg::reg_req_t          reg_req;  // from host system
   cnt_reg_pkg::reg_resp_t         reg_rsp;  // to host system
 
@@ -53,13 +53,13 @@ module cnt_tb_wrapper #(
   // COUNTER
   // -------
   // OBI request
-  assign obi_req = '{
-          req: obi_req_i,
-          we: obi_we_i,
-          be: obi_be_i,
-          addr: obi_addr_i,
-          wdata: obi_wdata_i
-      };
+  always_comb begin
+    obi_req.req      = obi_req_i;
+    obi_req.a.we     = obi_we_i;
+    obi_req.a.be     = obi_be_i;
+    obi_req.a.addr   = obi_addr_i;
+    obi_req.a.wdata  = obi_wdata_i;
+  end
   
   // Register interface request
   assign reg_req = '{
@@ -86,7 +86,7 @@ module cnt_tb_wrapper #(
   // OBI response
   assign obi_gnt_o    = obi_rsp.gnt;
   assign obi_rvalid_o = obi_rsp.rvalid;
-  assign obi_rdata_o  = obi_rsp.rdata;
+  assign obi_rdata_o  = obi_rsp.r.rdata;
 
   // Register interface response
   assign reg_error_o = reg_rsp.error;
