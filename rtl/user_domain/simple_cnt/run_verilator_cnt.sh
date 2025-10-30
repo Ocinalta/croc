@@ -1,11 +1,22 @@
 #!/bin/bash
 
-# Script per compilare con Verilator usando output di Bender
-# Uso: ./run_verilator.sh [log_file]
+# Script per compilare cnt con Verilator usando output di Bender
+# Uso:
+#   ./run_verilator_cnt.sh [log_file]
+#   ./run_verilator_cnt.sh clean    # per pulire i file generati
 
 LOG_FILE=${1:-"compile.log"}
 
-echo "=== Starting Verilator compilation at $(date) ===" | tee $LOG_FILE
+# Gestione del comando "clean"
+if [ "$1" == "clean" ]; then
+    echo "=== Cleaning build artifacts ==="
+    rm -f Bender.lock bender_files.f compile.log
+    rm -rf obj_dir
+    echo "✅ Cleanup completed."
+    exit 0
+fi
+
+echo "=== Starting Verilator compilation for cnt at $(date) ===" | tee $LOG_FILE
 
 # Genera la lista dei file con Bender
 echo "Generating file list with Bender..." | tee -a $LOG_FILE
