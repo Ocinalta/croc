@@ -6,6 +6,12 @@ packages:
       Path: rtl/apb
     dependencies:
     - common_cells
+  cnt:
+    revision: null
+    version: null
+    source:
+      Path: rtl/user_domain/simple_cnt
+    dependencies: []
   common_cells:
     revision: null
     version: null
@@ -19,6 +25,12 @@ packages:
     version: null
     source:
       Path: rtl/common_verification
+    dependencies: []
+  conv1d:
+    revision: null
+    version: null
+    source:
+      Path: rtl/user_domain/conv1d
     dependencies: []
   cve2:
     revision: null
