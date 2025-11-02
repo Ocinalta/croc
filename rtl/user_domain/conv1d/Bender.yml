@@ -27,6 +27,7 @@ sources:
   # Top-level modules
   - hw/conv1d.sv
   - hw/conv1d_obi.sv
+  - hw/simulation/conv1d_sram_wrapper.sv
   - hw/obi_sram_shim.sv
   
   # Accelerator components
