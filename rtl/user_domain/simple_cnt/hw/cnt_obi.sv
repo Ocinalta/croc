@@ -14,15 +14,15 @@
 // Date: 07/11/2024
 // Description: OBI bus wrapper for the simple counter
 
-module cnt_obi import croc_pkg::*; #(
+module cnt_obi #(
   parameter int unsigned W = 32  // counter bitwidth (max: 32)
 ) (
   input logic clk_i,
   input logic rst_ni,
 
   // OBI interface (counter value)
-  input  sbr_obi_req_t  obi_req_i,
-  output sbr_obi_rsp_t obi_rsp_o,
+  input  croc_pkg::sbr_obi_req_t  obi_req_i,
+  output croc_pkg::sbr_obi_rsp_t obi_rsp_o,
 
   // Register Interface (configuration registers)
   input  cnt_reg_pkg::reg_req_t  reg_req_i,

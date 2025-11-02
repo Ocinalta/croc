@@ -15,15 +15,15 @@
 // Date: 08/11/2024
 // Description: conv1d accelerator top module
 
-module conv1d import croc_pkg::*; (
+module conv1d (
   /* verilator lint_off UNUSED */  // TODO: Remove this line when the signal is used
   /* verilator lint_off UNDRIVEN */  // TODO: Remove this line when the signal is used
   input logic clk_i,
   input logic rst_ni,
 
   // Interface towards internal memory
-  input  sbr_obi_req_t mem_req_i,
-  output sbr_obi_rsp_t mem_rsp_o,
+  input  croc_pkg::sbr_obi_req_t mem_req_i,
+  output croc_pkg::sbr_obi_rsp_t mem_rsp_o,
 
   // TODO: add here other interface signals (e.g., from the config. registers)
   input  conv1d_control_reg_pkg::conv1d_control_reg2hw_t reg2hw_t,
@@ -39,7 +39,6 @@ module conv1d import croc_pkg::*; (
   // ----------------
   // import of packages
   import conv1d_sram_pkg::*;
-  import conv1d_obi_pkg::*;
   import conv1d_control_reg_pkg::*;
   import conv1d_reg_pkg::*;
 
@@ -110,9 +109,9 @@ module conv1d import croc_pkg::*; (
 //  );
 
 obi_sram_shim #(
-  .ObiCfg    (SbrObiCfg),
-  .obi_req_t (sbr_obi_req_t),
-  .obi_rsp_t (sbr_obi_rsp_t)
+  .ObiCfg    (croc_pkg::SbrObiCfg),
+  .obi_req_t (croc_pkg::sbr_obi_req_t),
+  .obi_rsp_t (croc_pkg::sbr_obi_rsp_t)
 ) u_obi_bridge (
   .clk_i     (clk_i),
   .rst_ni    (rst_ni),

@@ -2,3 +2,4 @@ obj_dir
 Bender.lock
 bender_files.f
 compile.log
+logs

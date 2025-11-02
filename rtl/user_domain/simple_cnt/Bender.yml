@@ -15,12 +15,11 @@ sources:
   - hw/vendor/pulp-platform-register-interface/include
 
   # RTL packages
-  - hw/packages/cnt_obi_pkg.sv
+  - hw/vendor/pulp-platform-common-cells/src/cf_math_pkg.sv
+  - hw/packages/obi_pkg.sv
+  - hw/packages/croc_pkg.sv
   - hw/packages/cnt_reg_pkg.sv
   - hw/control-reg/rtl/cnt_control_reg_pkg.sv
-  - hw/vendor/pulp-platform-common-cells/src/cf_math_pkg.sv
-  - ../../obi/obi_pkg.sv
-  - ../../croc_pkg.sv
   
   # RTL files
   - hw/control-reg/rtl/cnt_control_reg_top.sv

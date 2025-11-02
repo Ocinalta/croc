@@ -12,6 +12,7 @@ if [ "$1" == "clean" ]; then
     echo "=== Cleaning build artifacts ==="
     rm -f Bender.lock bender_files.f compile.log
     rm -rf obj_dir
+    rm -rf logs
     echo "✅ Cleanup completed."
     exit 0
 fi
