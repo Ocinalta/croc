@@ -26,7 +26,7 @@ module conv1d_obi (
 
   // Register Interface (configuration registers)
   input  conv1d_reg_pkg::reg_req_t  reg_req_i,
-  output conv1d_reg_pkg::reg_resp_t reg_rsp_o,
+  output conv1d_reg_pkg::reg_rsp_t  reg_rsp_o,
 
   // Conv1d completion interrupt
   output logic done_int_o  // interrupt to host system

@@ -25,9 +25,9 @@ package conv1d_reg_pkg;
   } reg_req_t;
 
   typedef struct packed {
-    logic        error;
-    logic        ready;
-    logic [31:0] rdata;
-  } reg_resp_t;
+      logic [31:0] rdata;
+      logic        error;
+      logic        ready;
+  } reg_rsp_t;
 
 endpackage

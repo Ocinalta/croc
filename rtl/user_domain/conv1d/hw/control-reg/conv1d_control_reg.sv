@@ -21,7 +21,7 @@ module conv1d_control_reg (
   /* verilator lint_off UNDRIVEN */  // TODO: Remove this line when the signal is driven
   // Register interface
   input  conv1d_reg_pkg::reg_req_t  req_i,   // from host system
-  output conv1d_reg_pkg::reg_resp_t rsp_o,   // to host system
+  output conv1d_reg_pkg::reg_rsp_t  rsp_o,   // to host system
 
   // TODO: Add here the interface from the registers to the accelerator
   output conv1d_control_reg_pkg::conv1d_control_reg2hw_t reg2hw_tt,
@@ -42,7 +42,7 @@ module conv1d_control_reg (
   // Registers top module
   conv1d_control_reg_top #(
     .reg_req_t(conv1d_reg_pkg::reg_req_t),
-    .reg_rsp_t(conv1d_reg_pkg::reg_resp_t)
+    .reg_rsp_t(conv1d_reg_pkg::reg_rsp_t)
   ) u_conv1d_control_reg_top (
     .clk_i    (clk_i),
     .rst_ni   (rst_ni),

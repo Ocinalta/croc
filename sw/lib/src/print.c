@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 // Philippe Sauter <phsauter@iis.ee.ethz.ch>
+//
+// Modified by Marco Penno <marco.penno@polito.it>, 2025.
 
 #include "print.h"
 #include "util.h"
@@ -27,22 +29,45 @@ uint8_t format_hex32(char *buffer, uint32_t num) {
     return idx;
 }
 
+uint8_t format_dec32(char *buffer, uint32_t num) {
+    uint8_t idx = 0;
+
+    if (num == 0) {
+        buffer[0] = '0';
+        return 1;
+    }
+
+    while (num > 0) {
+        buffer[idx++] = '0' + (num % 10);
+        num /= 10;
+    }
+    return idx;
+}
+
 void printf(char *fmt, ...) {
     va_list args;
     va_start(args, fmt);
-    char buffer[12];  // holds string while assembling
+    char buffer[12];
     uint8_t idx;
 
     while (*fmt) {
         if (*fmt == '%') {
             fmt++;
+
             if (*fmt == 'x') { // hex
                 idx = format_hex32(buffer, va_arg(args, unsigned int));
-                // print from buffer
                 for (int j = idx - 1; j >= 0; j--) {
                     putchar(buffer[j]);
                 }
             }
+
+            else if (*fmt == 'u') { // decimal unsigned
+                idx = format_dec32(buffer, va_arg(args, unsigned int));
+                for (int j = idx - 1; j >= 0; j--) {
+                    putchar(buffer[j]);
+                }
+            }
+
         } else {
             putchar(*fmt);
         }

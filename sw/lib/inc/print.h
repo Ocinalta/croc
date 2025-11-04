@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 // Philippe Sauter <phsauter@iis.ee.ethz.ch>
+//
+// Modified by Marco Penno <marco.penno@polito.it>, 2025.
 
 #pragma once
 
@@ -10,5 +12,5 @@
 
 extern void putchar(char);
 
-// simple printf with support for %x formatter but no others
+// simple printf with support for %x and %u formatter but no others
 void printf(char *fmt, ...);
