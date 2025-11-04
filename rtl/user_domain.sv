@@ -23,7 +23,7 @@ module user_domain import user_pkg::*; import croc_pkg::*; #(
   output logic [NumExternalIrqs-1:0] interrupts_o // interrupts to core
 );
 
-  assign interrupts_o = '0;  
+  //assign interrupts_o = '0;  
 
 
   //////////////////////
