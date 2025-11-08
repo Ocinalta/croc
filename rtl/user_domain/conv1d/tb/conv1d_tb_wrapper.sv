@@ -45,7 +45,7 @@ module conv1d_tb_wrapper import croc_pkg::*; (
   sbr_obi_req_t          obi_req;  // from host system
   sbr_obi_rsp_t          obi_rsp;  // to host system
   conv1d_reg_pkg::reg_req_t          reg_req;  // from host system
-  conv1d_reg_pkg::reg_resp_t         reg_rsp;  // to host system
+  conv1d_reg_pkg::reg_rsp_t         reg_rsp;  // to host system
 
   // -------
   // COUNTER
