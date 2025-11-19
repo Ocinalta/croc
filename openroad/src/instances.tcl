@@ -23,13 +23,41 @@ set USER            i_croc_soc/i_user
 set IBEX            $CROC/i_core_wrap.i_ibex
 set SRAM            $CROC/gen_sram_bank
 set JTAG            $CROC/i_dmi_jtag
-set SRAM_512x32     gen_512x32xBx1.i_cut
+set SRAM_2048x32    gen_2048x32xBx1.i_cut
 
 # memory banks
 set sram {\[0\].i_sram/}
-set bank0_sram0 $SRAM$sram$SRAM_512x32
+set bank0_sram0 $SRAM$sram$SRAM_2048x32
 set sram {\[1\].i_sram/}
-set bank1_sram0 $SRAM$sram$SRAM_512x32
+set bank1_sram0 $SRAM$sram$SRAM_2048x32
+set sram {\[2\].i_sram/}
+set bank2_sram0 $SRAM$sram$SRAM_2048x32
+set sram {\[3\].i_sram/}
+set bank3_sram0 $SRAM$sram$SRAM_2048x32
+set sram {\[4\].i_sram/}
+set bank4_sram0 $SRAM$sram$SRAM_2048x32
+set sram {\[5\].i_sram/}
+set bank5_sram0 $SRAM$sram$SRAM_2048x32
+set sram {\[6\].i_sram/}
+set bank6_sram0 $SRAM$sram$SRAM_2048x32
+set sram {\[7\].i_sram/}
+set bank7_sram0 $SRAM$sram$SRAM_2048x32
+set sram {\[8\].i_sram/}
+set bank8_sram0 $SRAM$sram$SRAM_2048x32
+set sram {\[9\].i_sram/}
+set bank9_sram0 $SRAM$sram$SRAM_2048x32
+set sram {\[10\].i_sram/}
+set bank10_sram0 $SRAM$sram$SRAM_2048x32
+set sram {\[11\].i_sram/}
+set bank11_sram0 $SRAM$sram$SRAM_2048x32
+set sram {\[12\].i_sram/}
+set bank12_sram0 $SRAM$sram$SRAM_2048x32
+set sram {\[13\].i_sram/}
+set bank13_sram0 $SRAM$sram$SRAM_2048x32
+set sram {\[14\].i_sram/}
+set bank14_sram0 $SRAM$sram$SRAM_2048x32
+set sram {\[15\].i_sram/}
+set bank15_sram0 $SRAM$sram$SRAM_2048x32
 
 set JTAG_ASYNC_REQ [get_nets $JTAG/i_dmi_cdc.i_cdc_req/*async_*]
 set JTAG_ASYNC_RSP [get_nets $JTAG/i_dmi_cdc.i_cdc_resp/*async_*]

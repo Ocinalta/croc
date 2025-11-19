@@ -4,6 +4,7 @@
 //
 // Nils Wistoff <nwistoff@iis.ee.ethz.ch>
 // Paul Scheffler <paulsc@iis.ee.ethz.ch>
+// Modified by Marco Penno <marco.penno@polito.it>, 2025
 
 #pragma once
 

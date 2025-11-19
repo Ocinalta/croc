@@ -10,9 +10,6 @@ export_include_dirs:
   - ../../register_interface/include
   
 sources:
-  # Include directories
-  - hw/vendor/pulp-platform-common-cells/include
-  - hw/vendor/pulp-platform-register-interface/include
 
   # RTL packages
   - hw/vendor/pulp-platform-common-cells/src/cf_math_pkg.sv

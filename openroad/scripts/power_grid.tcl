@@ -30,7 +30,7 @@ if {[info exists power_grid_defined]} {
 ##########################################################################
 # Core Power Ring
 ## Space between pads and core -> used for power ring
-set PowRingSpace  35
+set PowRingSpace  105
 ## Spacing must meet TM2 rules
 set pgcrSpacing 6
 ## Width must meet TM2 rules
@@ -40,9 +40,9 @@ set pgcrOffset [expr ($PowRingSpace - $pgcrSpacing - 2 * $pgcrWidth) / 2]
 
 # TopMetal2 Core Power Grid
 set tpg2Width     6; # arbitrary number
-set tpg2Pitch   204; # multiple of pad-pitch
-set tpg2Spacing  60; # big enough to skip over a pad
-set tpg2Offset   97; # offset from leftX of core
+set tpg2Pitch   612; # multiple of pad-pitch
+set tpg2Spacing  180; # big enough to skip over a pad
+set tpg2Offset   291; # offset from leftX of core
 
 # Macro Power Rings -> M3 and M2
 ## Spacing must be larger than pitch of M2/M3
