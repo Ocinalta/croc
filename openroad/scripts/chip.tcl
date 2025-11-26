@@ -49,8 +49,8 @@ report_checks -format end -no_line_splits                >> ${report_dir}/${log_
 report_checks -format end -no_line_splits                >> ${report_dir}/${log_id_str}_${proj_name}_checks.rpt
 
 # Size of the chip
-set chipW            5280.0
-set chipH            5280.0
+set chipW            3520.0
+set chipH            3520.0
 
 # thickness of annular ring for pads (length of a pad)
 set padRing           180.0
@@ -117,9 +117,9 @@ utl::report "###################################################################
 
 set_thread_count 8
 
-set GPL_ARGS {  -density 0.30 }
+set GPL_ARGS {  -density 0.50 }
 
-set GPL2_ARGS { -density 0.30
+set GPL2_ARGS { -density 0.50
                 -routability_driven
                 -routability_check_overflow 0.30
                 -timing_driven }

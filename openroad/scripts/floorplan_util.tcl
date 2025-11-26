@@ -41,3 +41,19 @@ proc add_macro_blockage {negative_padding name1 name2} {
   set blockage [odb::dbBlockage_create [ord::get_db_block] $minx $miny $maxx $maxy]
   return $blockage
 }
+
+proc addHaloToBlock {left bottom right top name} {
+  set block [ord::get_db_block]
+  set inst [odb::dbBlock_findInst $block $name]
+
+  set bbox [odb::dbInst_getBBox $inst]
+  set minx [odb::dbBox_xMin $bbox]
+  set miny [odb::dbBox_yMin $bbox]
+  set maxx [odb::dbBox_xMax $bbox]
+  set maxy [odb::dbBox_yMax $bbox]
+
+  set minx [expr $minx - [ord::microns_to_dbu $left]]
+  set miny [expr $miny - [ord::microns_to_dbu $bottom]]
+  set maxx [expr $maxx + [ord::microns_to_dbu $right]]
+  set maxy [expr $maxy + [ord::microns_to_dbu $top]]
+}

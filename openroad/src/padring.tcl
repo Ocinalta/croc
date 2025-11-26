@@ -43,8 +43,8 @@ make_io_sites -horizontal_site sg13g2_ioSite \
 set padD    180; # pad depth (edge to core)
 set padW     80; # pad width (beachfront)
 
-set chipH  5280; # left/right (height)
-set chipW  5280; # top/bottom (width)
+set chipH  3520; # left/right (height)
+set chipW  3520; # top/bottom (width)
 
 #Edge: LEFT (top to bottom)
 set numPads 16

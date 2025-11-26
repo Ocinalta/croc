@@ -85,27 +85,48 @@ set floor_midpointY   [expr $floor_bottomY + ($floor_topY - $floor_bottomY)/2]
 
 utl::report "Place Macros"
 
-# Memory bank placing
+# Memory bank placing - 8 left side, 8 right side
 set numBanks 16 
-set banksPerColumn 8
-set numColumns 2
+set banksPerSide 8
 
-set spacingY 250
-set spacingX 400
-set offsetY 400
+# Spaziatura tra le macro
+set spacingY 20
+set spacingY_group 120   ;# Spacing maggiore ogni 4 RAM
+
+# Halo asimmetrico: più spazio verso il centro del chip
+set halo_toEdge    5    ;# Verso i bordi esterni del SoC
+set halo_toCenter  15   ;# Verso il centro del SoC (più routing)
+set halo_vertical  10   ;# Top/Bottom (tra SRAMs verticalmente)
 
 for {set i 0} {$i < $numBanks} {incr i} {
-   set col [expr $i / $banksPerColumn]
-   set row [expr $i % $banksPerColumn]
-
-   set baseX [expr $floor_midpointX \
-              - ($numColumns * $RamSize256x64_W + ($numColumns - 1) * $spacingX) / 2]
-
-   set X [expr $baseX + $col * ($RamSize256x64_W + $spacingX)]
-   set Y [expr $floor_topY - ($RamSize256x64_H + $spacingY) * $row - $offsetY]
+   if {$i < $banksPerSide} {
+      # Prime 8 bank: bordo sinistro
+      set X $floor_leftX
+      set row $i
+      # Halo: poco a sinistra (bordo), molto a destra (centro)
+      set halo_left   $halo_toEdge
+      set halo_right  $halo_toCenter
+   } else {
+      # Seconde 8 bank: bordo destro
+      set X [expr $floor_rightX - $RamSize256x64_W]
+      set row [expr $i - $banksPerSide]
+      # Halo: molto a sinistra (centro), poco a destra (bordo)
+      set halo_left   $halo_toCenter
+      set halo_right  $halo_toEdge
+   }
+   
+   # Calcola offset cumulativo per i gruppi
+   set groupOffset [expr ($row / 4) * ($spacingY_group - $spacingY)]
+   
+   # Posizionamento verticale (dall'alto verso il basso)
+   # Usa spacing normale + offset extra per i gruppi
+   set Y [expr $floor_topY - ($row + 1) * ($RamSize256x64_H + $spacingY) - $groupOffset]
 
    set bankVar [set bank${i}_sram0]
    placeInstance $bankVar $X $Y R0
+   
+   # Halo asimmetrico basato sulla posizione
+   addHaloToBlock $halo_left $halo_vertical $halo_right $halo_vertical $bankVar
 }
 
 

@@ -1,7 +1,7 @@
 package:
   name: cnt
   authors:
-    - "Marco Penno"
+    - "Marco Penno <marco.penno@polito.it>"
 
 export_include_dirs:
   - hw/vendor/pulp-platform-common-cells/include
@@ -10,11 +10,14 @@ export_include_dirs:
   - ../../register_interface/include
   
 sources:
+  # Simulation packages
+  - target: test
+    files:
+      - hw/vendor/pulp-platform-common-cells/src/cf_math_pkg.sv
+      - hw/packages/obi_pkg.sv
+      - hw/packages/croc_pkg.sv
 
   # RTL packages
-  - hw/vendor/pulp-platform-common-cells/src/cf_math_pkg.sv
-  - hw/packages/obi_pkg.sv
-  - hw/packages/croc_pkg.sv
   - hw/packages/cnt_reg_pkg.sv
   - hw/control-reg/rtl/cnt_control_reg_pkg.sv
   
@@ -24,13 +27,13 @@ sources:
   - hw/cnt_obi.sv
   - hw/cnt.sv
 
-  # Vendored primitives
-  - hw/vendor/pulp-platform-register-interface/vendor/lowrisc_opentitan/src/prim_subreg_arb.sv
-  - hw/vendor/pulp-platform-register-interface/vendor/lowrisc_opentitan/src/prim_subreg_ext.sv
-  - hw/vendor/pulp-platform-register-interface/vendor/lowrisc_opentitan/src/prim_subreg_shadow.sv
-  - hw/vendor/pulp-platform-register-interface/vendor/lowrisc_opentitan/src/prim_subreg.sv
-
 # Target-specific files (testbench)
   - target: test
     files:
+      # Vendored primitives
+      - hw/vendor/pulp-platform-register-interface/vendor/lowrisc_opentitan/src/prim_subreg_arb.sv
+      - hw/vendor/pulp-platform-register-interface/vendor/lowrisc_opentitan/src/prim_subreg_ext.sv
+      - hw/vendor/pulp-platform-register-interface/vendor/lowrisc_opentitan/src/prim_subreg_shadow.sv
+      - hw/vendor/pulp-platform-register-interface/vendor/lowrisc_opentitan/src/prim_subreg.sv
+      # Testbench
       - tb/cnt_tb_wrapper.sv

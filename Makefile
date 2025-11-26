@@ -5,6 +5,9 @@
 # Authors:
 # - Philippe Sauter <phsauter@iis.ee.ethz.ch>
 
+# Global configuration
+ROOT_DIR			:= $(realpath .)
+
 # Tools
 BENDER	  ?= bender
 PYTHON3   ?= python3
@@ -19,6 +22,10 @@ REGGEN    ?= $(PYTHON3) $(shell $(BENDER) path register_interface)/vendor/lowris
 # directory of the path to the last called Makefile (this one)
 PROJ_DIR  := $(realpath $(dir $(realpath $(lastword $(MAKEFILE_LIST)))))
 
+# Firmware installing
+FIRMWARE	?= $(ROOT_DIR)/sw/bin/main.hex
+APP_MAKE 	:= $(wildcard sw/applications/$(PROJECT)/*akefile)
+APP_PARAMS  ?=
 
 default: help
 
@@ -48,6 +55,16 @@ clean-deps:
 ############
 # Software #
 ############
+.PHONY: app
+app: $(ROOT_DIR)/sw/bin/
+ifneq ($(APP_MAKE),)
+	@echo "### Calling application-specific makefile '$(APP_MAKE)'..."
+	$(MAKE) -C $(dir $(APP_MAKE)) APP_PARAMS="$(APP_PARAMS)"
+endif
+	@echo "### Building application for SRAM execution with GCC compiler..."
+	CDEFS=$(CDEFS) $(MAKE) -f $(XHEEP_MAKE) $(MAKECMDGOALS) LINK_FOLDER=$(LINK_FOLDER) ARCH=$(ARCH)
+	find $(SW_BUILD_DIR)/ -maxdepth 1 -type f -name "main.*" -exec cp '{}' $(BUILD_DIR)/sw/app/ \;
+
 SW_HEX := sw/bin/helloworld.hex
 
 $(SW_HEX): sw/*.c sw/*.h sw/*.S sw/*.ld

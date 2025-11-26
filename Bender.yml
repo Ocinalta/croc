@@ -19,7 +19,7 @@ dependencies:
   obi:                  { git: "https://github.com/pulp-platform/obi.git",                  version: 0.1.7  }
   obi_peripherals:      { git: "https://github.com/pulp-platform/obi_peripherals.git",      rev: 21ee04d    } # UART
   cve2:                 { path: "rtl/cve2" } # a vendor package (no Bender.yml), see below 
-  conv1d:               { path: "rtl/user_domain/conv1d" } # User added
+  conv1d_accel:         { path: "rtl/user_domain/conv1d" } # User added
   cnt:                  { path: "rtl/user_domain/simple_cnt" } # User added
 
 
