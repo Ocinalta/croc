@@ -1,11 +1,4 @@
-// Copyright (c) 2024 ETH Zurich and University of Bologna.
-// Licensed under the Apache License, Version 2.0, see LICENSE for details.
-// SPDX-License-Identifier: Apache-2.0/
-//
-// Authors:
-// - Philippe Sauter <phsauter@iis.ee.ethz.ch>
-//
-// Modified by Marco Penno <marco.penno@polito.it>, 2025.
+// Created by Marco Penno <marco.penno@polito.it>, 2025.
 
 // System library headers
 #include <string.h>

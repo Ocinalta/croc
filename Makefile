@@ -65,7 +65,7 @@ endif
 	CDEFS=$(CDEFS) $(MAKE) -f $(XHEEP_MAKE) $(MAKECMDGOALS) LINK_FOLDER=$(LINK_FOLDER) ARCH=$(ARCH)
 	find $(SW_BUILD_DIR)/ -maxdepth 1 -type f -name "main.*" -exec cp '{}' $(BUILD_DIR)/sw/app/ \;
 
-SW_HEX := sw/bin/helloworld.hex
+SW_HEX := sw/bin/main.hex
 
 $(SW_HEX): sw/*.c sw/*.h sw/*.S sw/*.ld
 	$(MAKE) -C sw/ compile
