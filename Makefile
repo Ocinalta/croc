@@ -15,7 +15,6 @@ VERILATOR ?= /foss/tools/bin/verilator
 YOSYS     ?= yosys
 OPENROAD  ?= openroad
 KLAYOUT   ?= klayout
-VSIM      ?= vsim
 REGGEN    ?= $(PYTHON3) $(shell $(BENDER) path register_interface)/vendor/lowrisc_opentitan/util/regtool.py
 
 # Directories
@@ -80,30 +79,6 @@ sw: $(SW_HEX)
 ##################
 # RTL Simulation #
 ##################
-# Questasim/Modelsim/vsim
-VLOG_ARGS  = -svinputport=compat
-VSIM_ARGS  = -t 1ns -voptargs=+acc
-VSIM_ARGS += -suppress vsim-3009 -suppress vsim-8683 -suppress vsim-8386
-
-vsim/compile_rtl.tcl: Bender.lock Bender.yml
-	$(BENDER) script vsim -t rtl -t vsim -t simulation -t verilator -DSYNTHESIS -DSIMULATION  --vlog-arg="$(VLOG_ARGS)" > $@
-
-vsim/compile_netlist.tcl: Bender.lock Bender.yml
-	$(BENDER) script vsim -t ihp13 -t vsim -t simulation -t verilator -t netlist_yosys -DSYNTHESIS -DSIMULATION > $@
-
-## Simulate RTL using Questasim/Modelsim/vsim
-vsim: vsim/compile_rtl.tcl $(SW_HEX)
-	rm -rf vsim/work
-	cd vsim; $(VSIM) -c -do "source compile_rtl.tcl; exit"
-	cd vsim; $(VSIM) +binary="$(realpath $(SW_HEX))" -gui tb_croc_soc $(VSIM_ARGS)
-
-## Simulate netlist using Questasim/Modelsim/vsim
-vsim-yosys: vsim/compile_netlist.tcl $(SW_HEX) yosys/out/croc_chip_yosys_debug.v
-	rm -rf vsim/work
-	cd vsim; $(VSIM) -c -do "source compile_netlist.tcl; source compile_tech.tcl; exit"
-	cd vsim; $(VSIM) -gui tb_croc_soc $(VSIM_ARGS)
-
-
 # Verilator
 # Turn off style warnings and well-defined SystemVerilog warnings that should be part of -Wno-style
 VERILATOR_ARGS = -Wno-fatal -Wno-style \
@@ -125,7 +100,7 @@ verilator/obj_dir/Vtb_croc_soc: verilator/croc.f $(SW_HEX)
 verilator: verilator/obj_dir/Vtb_croc_soc
 	cd verilator; obj_dir/Vtb_croc_soc +binary="$(realpath $(SW_HEX))"
 
-.PHONY: verilator vsim vsim-yosys
+.PHONY: verilator
 
 
 ####################
