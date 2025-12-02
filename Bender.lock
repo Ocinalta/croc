@@ -26,12 +26,6 @@ packages:
     source:
       Path: rtl/common_verification
     dependencies: []
-  conv1d_accel:
-    revision: null
-    version: null
-    source:
-      Path: rtl/user_domain/conv1d
-    dependencies: []
   cve2:
     revision: null
     version: null
