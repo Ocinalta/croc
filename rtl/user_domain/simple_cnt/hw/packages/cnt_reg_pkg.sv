@@ -17,17 +17,16 @@
 package cnt_reg_pkg;
 
   typedef struct packed {
-    logic        valid;
-    logic        write;
-    logic [3:0]  wstrb;
     logic [31:0] addr;
+    logic        write;
     logic [31:0] wdata;
+    logic [ 3:0] wstrb;
+    logic        valid;
   } reg_req_t;
 
   typedef struct packed {
+    logic [31:0] rdata;
     logic        error;
     logic        ready;
-    logic [31:0] rdata;
-  } reg_resp_t;
-
+  } reg_rsp_t;
 endpackage

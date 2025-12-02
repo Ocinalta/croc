@@ -20,7 +20,7 @@ module cnt_control_reg (
 
   // Register interface
   input  cnt_reg_pkg::reg_req_t  req_i,  // from host system
-  output cnt_reg_pkg::reg_resp_t rsp_o,  // to host system
+  output cnt_reg_pkg::reg_rsp_t rsp_o,  // to host system
 
   // Counter control signals
   input  logic        cnt_tc_i,   // counter terminal count
@@ -50,7 +50,7 @@ module cnt_control_reg (
   // Registers top module
   cnt_control_reg_top #(
     .reg_req_t(cnt_reg_pkg::reg_req_t),
-    .reg_rsp_t(cnt_reg_pkg::reg_resp_t)
+    .reg_rsp_t(cnt_reg_pkg::reg_rsp_t)
   ) u_cnt_control_reg_top (
     .clk_i    (clk_i),
     .rst_ni   (rst_ni),

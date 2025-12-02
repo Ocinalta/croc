@@ -12,74 +12,74 @@ module cnt_control_reg_top #(
   parameter type reg_rsp_t = logic,
   parameter int AW = 4
 ) (
-  input                                            clk_i,
-  input                                            rst_ni,
-  input  reg_req_t                                 reg_req_i,
-  output reg_rsp_t                                 reg_rsp_o,
+  input logic clk_i,
+  input logic rst_ni,
+  input  reg_req_t reg_req_i,
+  output reg_rsp_t reg_rsp_o,
   // To HW
-  output cnt_control_reg_pkg::cnt_control_reg2hw_t reg2hw,     // Write
-  input  cnt_control_reg_pkg::cnt_control_hw2reg_t hw2reg,     // Read
+  output cnt_control_reg_pkg::cnt_control_reg2hw_t reg2hw, // Write
+  input  cnt_control_reg_pkg::cnt_control_hw2reg_t hw2reg, // Read
 
 
   // Config
-  input devmode_i  // If 1, explicit error return for unmapped register access
+  input devmode_i // If 1, explicit error return for unmapped register access
 );
 
-  import cnt_control_reg_pkg::*;
+  import cnt_control_reg_pkg::* ;
 
   localparam int DW = 32;
-  localparam int DBW = DW / 8;  // Byte Width
+  localparam int DBW = DW/8;                    // Byte Width
 
   // register signals
   logic           reg_we;
   logic           reg_re;
-  logic [ AW-1:0] reg_addr;
-  logic [ DW-1:0] reg_wdata;
+  logic [BlockAw-1:0]  reg_addr;
+  logic [DW-1:0]  reg_wdata;
   logic [DBW-1:0] reg_be;
-  logic [ DW-1:0] reg_rdata;
+  logic [DW-1:0]  reg_rdata;
   logic           reg_error;
 
-  logic addrmiss, wr_err;
+  logic          addrmiss, wr_err;
 
-  logic     [DW-1:0] reg_rdata_next;
+  logic [DW-1:0] reg_rdata_next;
 
   // Below register interface can be changed
-  reg_req_t          reg_intf_req;
-  reg_rsp_t          reg_intf_rsp;
+  reg_req_t  reg_intf_req;
+  reg_rsp_t  reg_intf_rsp;
 
 
-  assign reg_intf_req       = reg_req_i;
-  assign reg_rsp_o          = reg_intf_rsp;
+  assign reg_intf_req = reg_req_i;
+  assign reg_rsp_o = reg_intf_rsp;
 
 
-  assign reg_we             = reg_intf_req.valid & reg_intf_req.write;
-  assign reg_re             = reg_intf_req.valid & ~reg_intf_req.write;
-  assign reg_addr           = reg_intf_req.addr;
-  assign reg_wdata          = reg_intf_req.wdata;
-  assign reg_be             = reg_intf_req.wstrb;
+  assign reg_we = reg_intf_req.valid & reg_intf_req.write;
+  assign reg_re = reg_intf_req.valid & ~reg_intf_req.write;
+  assign reg_addr = reg_intf_req.addr[BlockAw-1:0];
+  assign reg_wdata = reg_intf_req.wdata;
+  assign reg_be = reg_intf_req.wstrb;
   assign reg_intf_rsp.rdata = reg_rdata;
   assign reg_intf_rsp.error = reg_error;
   assign reg_intf_rsp.ready = 1'b1;
 
-  assign reg_rdata          = reg_rdata_next;
-  assign reg_error          = (devmode_i & addrmiss) | wr_err;
+  assign reg_rdata = reg_rdata_next ;
+  assign reg_error = (devmode_i & addrmiss) | wr_err;
 
 
   // Define SW related signals
   // Format: <reg>_<field>_{wd|we|qs}
   //        or <reg>_{wd|we|qs} if field == 1 or 0
-  logic        control_enable_qs;
-  logic        control_enable_wd;
-  logic        control_enable_we;
-  logic        control_clear_qs;
-  logic        control_clear_wd;
-  logic        control_clear_we;
-  logic        status_qs;
-  logic        status_wd;
-  logic        status_we;
+  logic control_enable_qs;
+  logic control_enable_wd;
+  logic control_enable_we;
+  logic control_clear_qs;
+  logic control_clear_wd;
+  logic control_clear_we;
+  logic status_qs;
+  logic status_wd;
+  logic status_we;
   logic [31:0] threshold_qs;
   logic [31:0] threshold_wd;
-  logic        threshold_we;
+  logic threshold_we;
 
   // Register instances
   // R[control]: V(False)
@@ -90,23 +90,23 @@ module cnt_control_reg_top #(
     .SWACCESS("RW"),
     .RESVAL  (1'h0)
   ) u_control_enable (
-    .clk_i (clk_i),
-    .rst_ni(rst_ni),
+    .clk_i   (clk_i    ),
+    .rst_ni  (rst_ni  ),
 
     // from register interface
-    .we(control_enable_we),
-    .wd(control_enable_wd),
+    .we     (control_enable_we),
+    .wd     (control_enable_wd),
 
     // from internal hardware
-    .de(1'b0),
-    .d ('0),
+    .de     (1'b0),
+    .d      ('0  ),
 
     // to internal hardware
-    .qe(),
-    .q (reg2hw.control.enable.q),
+    .qe     (),
+    .q      (reg2hw.control.enable.q ),
 
     // to register interface (read)
-    .qs(control_enable_qs)
+    .qs     (control_enable_qs)
   );
 
 
@@ -116,23 +116,23 @@ module cnt_control_reg_top #(
     .SWACCESS("RW"),
     .RESVAL  (1'h0)
   ) u_control_clear (
-    .clk_i (clk_i),
-    .rst_ni(rst_ni),
+    .clk_i   (clk_i    ),
+    .rst_ni  (rst_ni  ),
 
     // from register interface
-    .we(control_clear_we),
-    .wd(control_clear_wd),
+    .we     (control_clear_we),
+    .wd     (control_clear_wd),
 
     // from internal hardware
-    .de(hw2reg.control.clear.de),
-    .d (hw2reg.control.clear.d),
+    .de     (hw2reg.control.clear.de),
+    .d      (hw2reg.control.clear.d ),
 
     // to internal hardware
-    .qe(),
-    .q (reg2hw.control.clear.q),
+    .qe     (),
+    .q      (reg2hw.control.clear.q ),
 
     // to register interface (read)
-    .qs(control_clear_qs)
+    .qs     (control_clear_qs)
   );
 
 
@@ -143,23 +143,23 @@ module cnt_control_reg_top #(
     .SWACCESS("W1C"),
     .RESVAL  (1'h0)
   ) u_status (
-    .clk_i (clk_i),
-    .rst_ni(rst_ni),
+    .clk_i   (clk_i    ),
+    .rst_ni  (rst_ni  ),
 
     // from register interface
-    .we(status_we),
-    .wd(status_wd),
+    .we     (status_we),
+    .wd     (status_wd),
 
     // from internal hardware
-    .de(hw2reg.status.de),
-    .d (hw2reg.status.d),
+    .de     (hw2reg.status.de),
+    .d      (hw2reg.status.d ),
 
     // to internal hardware
-    .qe(),
-    .q (),
+    .qe     (),
+    .q      (),
 
     // to register interface (read)
-    .qs(status_qs)
+    .qs     (status_qs)
   );
 
 
@@ -170,23 +170,23 @@ module cnt_control_reg_top #(
     .SWACCESS("RW"),
     .RESVAL  (32'hffffffff)
   ) u_threshold (
-    .clk_i (clk_i),
-    .rst_ni(rst_ni),
+    .clk_i   (clk_i    ),
+    .rst_ni  (rst_ni  ),
 
     // from register interface
-    .we(threshold_we),
-    .wd(threshold_wd),
+    .we     (threshold_we),
+    .wd     (threshold_wd),
 
     // from internal hardware
-    .de(1'b0),
-    .d ('0),
+    .de     (1'b0),
+    .d      ('0  ),
 
     // to internal hardware
-    .qe(),
-    .q (reg2hw.threshold.q),
+    .qe     (),
+    .q      (reg2hw.threshold.q ),
 
     // to register interface (read)
-    .qs(threshold_qs)
+    .qs     (threshold_qs)
   );
 
 
@@ -194,13 +194,13 @@ module cnt_control_reg_top #(
 
   logic [2:0] addr_hit;
   always_comb begin
-    addr_hit    = '0;
+    addr_hit = '0;
     addr_hit[0] = (reg_addr == CNT_CONTROL_CONTROL_OFFSET);
     addr_hit[1] = (reg_addr == CNT_CONTROL_STATUS_OFFSET);
     addr_hit[2] = (reg_addr == CNT_CONTROL_THRESHOLD_OFFSET);
   end
 
-  assign addrmiss = (reg_re || reg_we) ? ~|addr_hit : 1'b0;
+  assign addrmiss = (reg_re || reg_we) ? ~|addr_hit : 1'b0 ;
 
   // Check sub-word write is permitted
   always_comb begin
@@ -213,14 +213,14 @@ module cnt_control_reg_top #(
   assign control_enable_we = addr_hit[0] & reg_we & !reg_error;
   assign control_enable_wd = reg_wdata[0];
 
-  assign control_clear_we  = addr_hit[0] & reg_we & !reg_error;
-  assign control_clear_wd  = reg_wdata[1];
+  assign control_clear_we = addr_hit[0] & reg_we & !reg_error;
+  assign control_clear_wd = reg_wdata[1];
 
-  assign status_we         = addr_hit[1] & reg_we & !reg_error;
-  assign status_wd         = reg_wdata[0];
+  assign status_we = addr_hit[1] & reg_we & !reg_error;
+  assign status_wd = reg_wdata[0];
 
-  assign threshold_we      = addr_hit[2] & reg_we & !reg_error;
-  assign threshold_wd      = reg_wdata[31:0];
+  assign threshold_we = addr_hit[2] & reg_we & !reg_error;
+  assign threshold_wd = reg_wdata[31:0];
 
   // Read data return
   always_comb begin
@@ -252,9 +252,61 @@ module cnt_control_reg_top #(
   logic unused_wdata;
   logic unused_be;
   assign unused_wdata = ^reg_wdata;
-  assign unused_be    = ^reg_be;
+  assign unused_be = ^reg_be;
 
   // Assertions for Register Interface
   `ASSERT(en2addrHit, (reg_we || reg_re) |-> $onehot0(addr_hit))
 
 endmodule
+
+module cnt_control_reg_top_intf
+#(
+  parameter int AW = 4,
+  localparam int DW = 32
+) (
+  input logic clk_i,
+  input logic rst_ni,
+  REG_BUS.in  regbus_slave,
+  // To HW
+  output cnt_control_reg_pkg::cnt_control_reg2hw_t reg2hw, // Write
+  input  cnt_control_reg_pkg::cnt_control_hw2reg_t hw2reg, // Read
+  // Config
+  input devmode_i // If 1, explicit error return for unmapped register access
+);
+ localparam int unsigned STRB_WIDTH = DW/8;
+
+`include "register_interface/typedef.svh"
+`include "register_interface/assign.svh"
+
+  // Define structs for reg_bus
+  typedef logic [AW-1:0] addr_t;
+  typedef logic [DW-1:0] data_t;
+  typedef logic [STRB_WIDTH-1:0] strb_t;
+  `REG_BUS_TYPEDEF_ALL(reg_bus, addr_t, data_t, strb_t)
+
+  reg_bus_req_t s_reg_req;
+  reg_bus_rsp_t s_reg_rsp;
+  
+  // Assign SV interface to structs
+  `REG_BUS_ASSIGN_TO_REQ(s_reg_req, regbus_slave)
+  `REG_BUS_ASSIGN_FROM_RSP(regbus_slave, s_reg_rsp)
+
+  
+
+  cnt_control_reg_top #(
+    .reg_req_t(reg_bus_req_t),
+    .reg_rsp_t(reg_bus_rsp_t),
+    .AW(AW)
+  ) i_regs (
+    .clk_i,
+    .rst_ni,
+    .reg_req_i(s_reg_req),
+    .reg_rsp_o(s_reg_rsp),
+    .reg2hw, // Write
+    .hw2reg, // Read
+    .devmode_i
+  );
+  
+endmodule
+
+

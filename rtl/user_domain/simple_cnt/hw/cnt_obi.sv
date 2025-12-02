@@ -21,12 +21,12 @@ module cnt_obi #(
   input logic rst_ni,
 
   // OBI interface (counter value)
-  input  croc_pkg::sbr_obi_req_t  obi_req_i,
+  input  croc_pkg::sbr_obi_req_t obi_req_i,
   output croc_pkg::sbr_obi_rsp_t obi_rsp_o,
 
   // Register Interface (configuration registers)
   input  cnt_reg_pkg::reg_req_t  reg_req_i,
-  output cnt_reg_pkg::reg_resp_t reg_rsp_o,
+  output cnt_reg_pkg::reg_rsp_t  reg_rsp_o,
 
   // Terminal count interrupt
   output logic tc_int_o  // interrupt to host system
@@ -98,9 +98,6 @@ module cnt_obi #(
               rdata:      {{32 - W{1'b0}}, obi_rdata_q}
            }
   };
-
-
-
   // -----------------
   // CONTROL REGISTERS
   // -----------------
